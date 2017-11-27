@@ -104,43 +104,56 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo \*\*\*\* Set\ Sticky\ Bit\ on\ All\ World-Writable\ Directories
   df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d \( -perm -0002 -a ! -perm -1000 \) 2>/dev/null | xargs chmod a+t
 
-  # Disable Automounting
+  # Disable Automounting CIS-1.1.21
   echo
   echo \*\*\*\* Disable\ Automounting
+  systemctl is-enabled autofs && systemctl disable autofs
   update-rc.d autofs disable
 
-  # Set User/Group Owner on bootloader config
+  # Install AIDE CIS-1.3.1
+  echo
+  echo \*\*\*\* Installing\ AIDE
+  dpkg -s aide || apt-get -y install aide
+
+  # Implement Periodic Execution of File Integrity CIS-1.3.2
+  echo
+  echo \*\*\*\* Implement\ Periodic\ Execution\ of\ File\ Integrity
+  (crontab -u root -l; crontab -u root -l | egrep -q "^0 5 \* \* \* /usr/sbin/aide --check$" || echo "0 5 * * * /usr/sbin/aide --check" ) | crontab -u root -
+
+  # Set User/Group Owner on bootloader config CIS-1.4.1
   echo
   echo \*\*\*\* Set\ User/Group\ Owner\ on\ bootloader\ config
   chown 0:0 /boot/grub/grub.cfg
 
-  # Set Permissions on bootloader config
+  # Set Permissions on bootloader config CIS-1.4.1
   echo
   echo \*\*\*\* Set\ Permissions\ on\ bootloader\ config
   chmod g-r-w-x,o-r-w-x /boot/grub/grub.cfg
 
-  # Set Boot Loader Password
+  # Set Boot Loader Password CIS-1.4.2
   echo
   echo \*\*\*\* Set\ Boot\ Loader\ Password
   echo Set\ Boot\ Loader\ Password not configured.
 
-  # Require Authentication for Single-User Mode
+  # Require Authentication for Single-User Mode CIS-1.4.3
   echo
   echo \*\*\*\* Require\ Authentication\ for\ Single-User\ Mode
   echo Require\ Authentication\ for\ Single-User\ Mode not configured.
 
-  # Restrict Core Dumps
+  # Restrict Core Dumps CIS-1.5.1
   echo
   echo \*\*\*\* Restrict\ Core\ Dumps
   egrep -q "^(\s*)\*\s+hard\s+core\s+\S+(\s*#.*)?\s*$" /etc/security/limits.conf && sed -ri "s/^(\s*)\*\s+hard\s+core\s+\S+(\s*#.*)?\s*$/\1* hard core 0\2/" /etc/security/limits.conf || echo "* hard core 0" >> /etc/security/limits.conf
   egrep -q "^(\s*)fs.suid_dumpable\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)fs.suid_dumpable\s*=\s*\S+(\s*#.*)?\s*$/\1fs.suid_dumpable = 0\2/" /etc/sysctl.conf || echo "fs.suid_dumpable = 0" >> /etc/sysctl.conf
+  sysctl -w fs.suid_dumpable=0
 
-  # Enable Randomized Virtual Memory Region Placement
+  # Enable Randomized Virtual Memory Region Placement CIS-1.5.3
   echo
   echo \*\*\*\* Enable\ Randomized\ Virtual\ Memory\ Region\ Placement
   egrep -q "^(\s*)kernel.randomize_va_space\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)kernel.randomize_va_space\s*=\s*\S+(\s*#.*)?\s*$/\1kernel.randomize_va_space = 2\2/" /etc/sysctl.conf || echo "kernel.randomize_va_space = 2" >> /etc/sysctl.conf
+  sysctl -w kernel.randomize_va_space=2
 
-  # Disable Prelink
+  # Disable Prelink CIS-1.5.4
   echo
   echo \*\*\*\* Disable\ Prelink
   dpkg -s prelink && apt-get -y purge prelink
@@ -846,7 +859,7 @@ if [ "$PROFILE" = "Level 2" ]; then
 
   # Install AIDE
   echo
-  echo \*\*\*\* Install\ AIDE
+  echo \*\*\*\* Installing\ AIDE
   dpkg -s aide || apt-get -y install aide
 
   # Implement Periodic Execution of File Integrity
