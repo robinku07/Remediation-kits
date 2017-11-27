@@ -202,30 +202,40 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo \*\*\*\* Ensure\ xinetd\ is\ not\ enabled
   update-rc.d xinetd disable
 
-  # Ensure chargen is not enabled
+  # Ensure chargen is not enabled CIS-2.1.1
   echo
   echo \*\*\*\* Ensure\ chargen\ is\ not\ enabled
-  sed -ri "s/^chargen/#chargen/" /etc/inetd.conf
+  if [ -f /etc/xinetd.d/chargen ]; then 
+  	sed -ri "s/^(\s+)disable(\s+)=(\s+)no/\tdisable\t\t= yes/g" /etc/xinetd.d/chargen
+  fi
 
-  # Ensure daytime is not enabled
+  # Ensure daytime is not enabled CIS-2.1.2
   echo
   echo \*\*\*\* Ensure\ daytime\ is\ not\ enabled
-  sed -ri "s/^daytime/#daytime/" /etc/inetd.conf
+  if [ -f /etc/xinetd.d/daytime ]; then
+  	 sed -ri "s/^(\s+)disable(\s+)=(\s+)no/\tdisable\t\t= yes/g" /etc/xinetd.d/daytime
+  fi
 
-  # Ensure echo is not enabled
+  # Ensure echo is not enabled CIS-2.1.4
   echo
   echo \*\*\*\* Ensure\ echo\ is\ not\ enabled
-  sed -ri "s/^echo/#echo/" /etc/inetd.conf
+  if [ -f /etc/xinetd.d/echo ]; then
+	sed -ri "s/^(\s+)disable(\s+)=(\s+)no/\tdisable\t\t= yes/g" /etc/xinetd.d/echo
+  fi
 
-  # Ensure discard is not enabled
+  # Ensure discard is not enabled CIS-2.1.3
   echo
   echo \*\*\*\* Ensure\ discard\ is\ not\ enabled
-  sed -ri "s/^discard/#discard/" /etc/inetd.conf
+  if [ -f /etc/xinetd.d/discard ]; then
+	sed -ri "s/^(\s+)disable(\s+)=(\s+)no/\tdisable\t\t= yes/g" /etc/xinetd.d/discard
+  fi
 
-  # Ensure time is not enabled
+  # Ensure time is not enabled CIS-2.1.5
   echo
   echo \*\*\*\* Ensure\ time\ is\ not\ enabled
-  sed -ri "s/^time/#time/" /etc/inetd.conf
+  if [ -f /etc/xinetd.d/time ]; then
+	sed -ri "s/^(\s+)disable(\s+)=(\s+)no/\tdisable\t\t= yes/g" /etc/xinetd.d/time
+  fi
 
   # Ensure the X Window system is not installed
   echo
@@ -560,9 +570,9 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo \*\*\*\* Lock\ Inactive\ User\ Accounts
   useradd -D -f 35
 
-  # Set Warning Banner for Standard Login Services
+  # Set Warning Banner for Standard Login Services CIS-1.7.1.4 to CIS-1.7.1.6
   echo
-  echo \*\*\*\* Set\ Warning\ Banner\ for\ Standard\ Login\ Services
+  echo \*\*\*\* Permission\ on\ /etc/motd,\ /etc/issue,\ /etc/issue.net\ are\ Configured
   chmod u+r+w-x,g+r-w-x,o+r-w-x /etc/motd
   chown 0:0 /etc/motd
   chmod u+r+w-x,g+r-w-x,o+r-w-x /etc/issue
@@ -570,13 +580,14 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   chmod u+r+w-x,g+r-w-x,o+r-w-x /etc/issue.net
   chown 0:0 /etc/issue.net
 
-  # Remove OS Information from Login Warning Banners
+  # Remove OS Information from Login Warning Banners CIS-1.7.1.1 to CIS-1.7.1.3
   echo
   echo \*\*\*\* Remove\ OS\ Information\ from\ Login\ Warning\ Banners
   sed -ri 's/(\\v|\\r|\\m|\\s)//g' /etc/issue
   sed -ri 's/(\\v|\\r|\\m|\\s)//g' /etc/issue.net
   sed -ri 's/(\\v|\\r|\\m|\\s)//g' /etc/motd
 
+  # We are not remediating the CIS-1.7.2 as we are not using Graphical Interface for any of the Server
   # Verify Permissions on /etc/passwd
   echo
   echo \*\*\*\* Verify\ Permissions\ on\ /etc/passwd
