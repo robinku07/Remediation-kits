@@ -1,4 +1,4 @@
-This archive contains a shell script for configuring Debian Linux 8 according to the CIS Benchmark.  It was tested against the CIS Debian Linux 8 Benchmark v1.0.0 as assessed by CIS-CAT v3.0.21.
+Welcome This archive contains a shell script for configuring Debian Linux 8 according to the CIS Benchmark.  It was tested against the CIS Debian Linux 8 Benchmark v1.0.0 as assessed by CIS-CAT v3.0.21.
 
 To execute the script pass a single parameter for the profile desired:
 
