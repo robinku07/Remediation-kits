@@ -163,12 +163,11 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo \*\*\*\* Ensure\ NIS\ is\ not\ installed
   dpkg -s nis && apt-get -y purge nis
 
-  # Ensure rsh server is not enabled
+  # Ensure rsh server is not enabled CIS-2.1.6
   echo
   echo \*\*\*\* Ensure\ rsh\ server\ is\ not\ enabled
-  sed -ri "s/^shell/#shell/" /etc/inetd.conf
-  sed -ri "s/^login/#login/" /etc/inetd.conf
-  sed -ri "s/^exec/#exec/" /etc/inetd.conf
+  dpkg -s rsh-server && apt-get purge -y rsh-server
+  dpkg -s rsh-redone-server && apt-get purge -y rsh-redone-server
 
   # Ensure rsh client is not installed
   echo
@@ -176,31 +175,42 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   dpkg -s rsh-client && apt-get -y remove rsh-client
   dpkg -s rsh-redone-client && apt-get -y remove rsh-redone-client
 
-  # Ensure talk server is not enabled
+  # Ensure talk server is not enabled CIS-2.1.7
   echo
   echo \*\*\*\* Ensure\ talk\ server\ is\ not\ enabled
   sed -ri "s/^talk/#talk/" /etc/inetd.conf
   sed -ri "s/^ntalk/#ntalk/" /etc/inetd.conf
+  dpkg -s talkd && apt-get purge -y talkd
 
   # Ensure talk client is not installed
   echo
   echo \*\*\*\* Ensure\ talk\ client\ is\ not\ installed
   dpkg -s talk && apt-get -y remove talk
 
-  # Ensure telnet server is not enabled
+  # Ensure telnet server is not enabled CIS-2.1.8
   echo
   echo \*\*\*\* Ensure\ telnet\ server\ is\ not\ enabled
   sed -ri "s/^telnet/#telnet/" /etc/inetd.conf
+  if [ -f /etc/xinetd.d/telnet ]; then
+         sed -ri "s/^(\s+)disable(\s+)=(\s+)no/\tdisable\t\t= yes/g" /etc/xinetd.d/telnet
+  fi
+  dpkg -s telnetd && apt-get purge -y telnetd
 
-  # Ensure tftp-server is not enabled
+
+  # Ensure tftp-server is not enabled CIS-2.1.9
   echo
   echo \*\*\*\* Ensure\ tftp-server\ is\ not\ enabled
   sed -ri "s/^tftp/#tftp/" /etc/inetd.conf
+  if [ -f /etc/xinetd.d/tftp ]; then
+         sed -ri "s/^(\s+)disable(\s+)=(\s+)no/\tdisable\t\t= yes/g" /etc/xinetd.d/tftp
+  fi
+  dpkg -s tftpd && apt-get purge -y tftpd
 
-  # Ensure xinetd is not enabled
+  # Ensure xinetd is not enabled CIS-2.1.10
   echo
   echo \*\*\*\* Ensure\ xinetd\ is\ not\ enabled
   update-rc.d xinetd disable
+  systemctl disable xinetd
 
   # Ensure chargen is not enabled CIS-2.1.1
   echo
@@ -237,34 +247,48 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
 	sed -ri "s/^(\s+)disable(\s+)=(\s+)no/\tdisable\t\t= yes/g" /etc/xinetd.d/time
   fi
 
-  # Ensure the X Window system is not installed
+  # Ensure the X Window system is not installed CIS-2.2.2
   echo
   echo \*\*\*\* Ensure\ the\ X\ Window\ system\ is\ not\ installed
   apt-get -y purge xserver-xorg-core*
 
-  # Ensure Avahi Server is not enabled
+  # Ensure Avahi Server is not enabled CIS-2.2.3
   echo
   echo \*\*\*\* Ensure\ Avahi\ Server\ is\ not\ enabled
   systemctl disable avahi-daemon
 
-  # Ensure DHCP Server is not enabled
+  # Ensure CUPS is not enabled CIS-2.2.4
+  echo
+  echo \*\*\*\* Ensure\ CUPS\ is\ not\ enabled
+  systemctl disable cups
+  dpkg -s cups && apt-get purge -y cups
+
+  # Ensure DHCP Server is not enabled CIS-2.2.5
   echo
   echo \*\*\*\* Ensure\ DHCP\ Server\ is\ not\ enabled
-  update-rc.d isc-dhcp-server disable
+  systemctl disable isc-dhcp-server
+  systemctl disable isc-dhcp-server6
 
-  # Configure Network Time Protocol (NTP)
+  # Configure Network Time Protocol (NTP) CIS-2.2.1.2
   echo
   echo \*\*\*\* Configure\ Network\ Time\ Protocol\ \(NTP\)
   dpkg -s ntp || apt-get -y install ntp
   egrep -q "^\s*restrict(\s+-4)?\s+default(\s+\S+)*(\s*#.*)?\s*$" /etc/ntp.conf && sed -ri "s/^(\s*)restrict(\s+-4)?\s+default(\s+[^[:space:]#]+)*(\s+#.*)?\s*$/\1restrict\2 default kod nomodify notrap nopeer noquery\4/" /etc/ntp.conf || echo "restrict default kod nomodify notrap nopeer noquery" >> /etc/ntp.conf 
   egrep -q "^\s*restrict\s+-6\s+default(\s+\S+)*(\s*#.*)?\s*$" /etc/ntp.conf && sed -ri "s/^(\s*)restrict\s+-6\s+default(\s+[^[:space:]#]+)*(\s+#.*)?\s*$/\1restrict -6 default kod nomodify notrap nopeer noquery\3/" /etc/ntp.conf || echo "restrict -6 default kod nomodify notrap nopeer noquery" >> /etc/ntp.conf 
-  egrep -q "^(\s*)OPTIONS\s*=\s*\"(([^\"]+)?-u\s[^[:space:]\"]+([^\"]+)?|([^\"]+))\"(\s*#.*)?\s*$" /etc/sysconfig/ntpd && sed -ri '/^(\s*)OPTIONS\s*=\s*\"([^\"]*)\"(\s*#.*)?\s*$/ {/^(\s*)OPTIONS\s*=\s*\"[^\"]*-u\s+\S+[^\"]*\"(\s*#.*)?\s*$/! s/^(\s*)OPTIONS\s*=\s*\"([^\"]*)\"(\s*#.*)?\s*$/\1OPTIONS=\"\2 -u ntp:ntp\"\3/ }' /etc/sysconfig/ntpd && sed -ri "s/^(\s*)OPTIONS\s*=\s*\"([^\"]+\s+)?-u\s[^[:space:]\"]+(\s+[^\"]+)?\"(\s*#.*)?\s*$/\1OPTIONS=\"\2\-u ntp:ntp\3\"\4/" /etc/sysconfig/ntpd || echo "OPTIONS=\"-u ntp:ntp\"" >> /etc/sysconfig/ntpd
+  egrep -q "^(\s*)OPTIONS\s*=\s*\"(([^\"]+)?-u\s[^[:space:]\"]+([^\"]+)?|([^\"]+))\"(\s*#.*)?\s*$" /etc/default/ntp && sed -ri '/^(\s*)OPTIONS\s*=\s*\"([^\"]*)\"(\s*#.*)?\s*$/ {/^(\s*)OPTIONS\s*=\s*\"[^\"]*-u\s+\S+[^\"]*\"(\s*#.*)?\s*$/! s/^(\s*)OPTIONS\s*=\s*\"([^\"]*)\"(\s*#.*)?\s*$/\1OPTIONS=\"\2 -u ntp:ntp\"\3/ }' /etc/default/ntp && sed -ri "s/^(\s*)OPTIONS\s*=\s*\"([^\"]+\s+)?-u\s[^[:space:]\"]+(\s+[^\"]+)?\"(\s*#.*)?\s*$/\1OPTIONS=\"\2\-u ntp:ntp\3\"\4/" /etc/default/ntp || echo "OPTIONS=\"-u ntp:ntp\"" >> /etc/default/ntp
   echo Configure\ Network\ Time\ Protocol\ \(NTP\) - server not configured.
 
-  # Ensure LDAP is not enabled
+  # Ensure LDAP is not enabled CIS-2.2.6
   echo
   echo \*\*\*\* Ensure\ LDAP\ is\ not\ enabled
+  systemctl disable slapd
   dpkg -s slapd && apt-get -y purge slapd
+
+  # Ensure NFS and RPC are not enabled CIS-2.2.7
+  echo
+  echo \*\*\*\* Ensure\ NFS\ and\ rpcbind\ are\ not\ enabled
+  systemctl disable nfs-kernel-server
+  systemctl disable rpcbind
 
   # Configure Mail Transfer Agent for Local-Only Mode
   echo
