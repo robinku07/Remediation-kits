@@ -53,43 +53,53 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo
   echo \*\*\*\* Set\ nodev\ option\ for\ /var/tmp\ Partition
   egrep -q "^(\s*\S+\s+)/var/tmp(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/var/tmp(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/var/tmp\2nodev\3\4/" /etc/fstab
+  
+  # Set nosuid option for /var/tmp Partition CIS-1.1.8
+  echo
+  echo \*\*\*\* Set\ nosuid\ option\ for\ /var/tmp\ Partition
+  egrep -q "^(\s*\S+\s+)/var/tmp(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/var/tmp(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/var/tmp\2nosuid\3\4/" /etc/fstab
 
-  # Create Separate Partition for /var/log
+  # Set noexec option for /var/tmp Partition CIS-1.1.9
+  echo
+  echo \*\*\*\* Set\ noexec\ option\ for\ /var/tmp\ Partition
+  egrep -q "^(\s*\S+\s+)/var/tmp(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/var/tmp(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/var/tmp\2noexec\3\4/" /etc/fstab
+
+  # Create Separate Partition for /var/log CIS-1.1.10
   echo
   echo \*\*\*\* Create\ Separate\ Partition\ for\ /var/log
   echo Create\ Separate\ Partition\ for\ /var/log not configured.
 
-  # Create Separate Partition for /var/log/audit
+  # Create Separate Partition for /var/log/audit CIS-1.1.11
   echo
   echo \*\*\*\* Create\ Separate\ Partition\ for\ /var/log/audit
   echo Create\ Separate\ Partition\ for\ /var/log/audit not configured.
 
-  # Create Separate Partition for /home
+  # Create Separate Partition for /home CIS-1.1.12
   echo
   echo \*\*\*\* Create\ Separate\ Partition\ for\ /home
   echo Create\ Separate\ Partition\ for\ /home not configured.
 
-  # Add nodev Option to /home
+  # Add nodev Option to /home CIS-1.1.13
   echo
   echo \*\*\*\* Add\ nodev\ Option\ to\ /home
   egrep -q "^(\s*\S+\s+)/home(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/home(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/home\2nodev\3\4/" /etc/fstab
 
-  # Add nodev Option to /run/shm Partition
+  # Add nodev Option to /run/shm Partition CIS-1.1.14
   echo
   echo \*\*\*\* Add\ nodev\ Option\ to\ /run/shm\ Partition
   egrep -q "^(\s*\S+\s+)/run/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/run/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/run/shm\2nodev\3\4/" /etc/fstab
 
-  # Add nosuid Option to /run/shm Partition
+  # Add nosuid Option to /run/shm Partition CIS-1.1.15
   echo
   echo \*\*\*\* Add\ nosuid\ Option\ to\ /run/shm\ Partition
   egrep -q "^(\s*\S+\s+)/run/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/run/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/run/shm\2nosuid\3\4/" /etc/fstab
 
-  # Add noexec Option to /run/shm Partition
+  # Add noexec Option to /run/shm Partition CIS-1.1.16
   echo
   echo \*\*\*\* Add\ noexec\ Option\ to\ /run/shm\ Partition
   egrep -q "^(\s*\S+\s+)/run/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/run/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/run/shm\2noexec\3\4/" /etc/fstab
 
-  # Set Sticky Bit on All World-Writable Directories
+  # Set Sticky Bit on All World-Writable Directories CIS-1.1.20
   echo
   echo \*\*\*\* Set\ Sticky\ Bit\ on\ All\ World-Writable\ Directories
   df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d \( -perm -0002 -a ! -perm -1000 \) 2>/dev/null | xargs chmod a+t
