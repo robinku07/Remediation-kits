@@ -158,9 +158,10 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo \*\*\*\* Disable\ Prelink
   dpkg -s prelink && apt-get -y purge prelink
 
-  # Ensure NIS is not installed
+  # Ensure NIS is not installed CIS-2.2.17 and CIS-2.3.1
   echo
   echo \*\*\*\* Ensure\ NIS\ is\ not\ installed
+  systemctl is-enabled nis && systemctl disable nis
   dpkg -s nis && apt-get -y purge nis
 
   # Ensure rsh server is not enabled CIS-2.1.6
@@ -169,7 +170,7 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   dpkg -s rsh-server && apt-get purge -y rsh-server
   dpkg -s rsh-redone-server && apt-get purge -y rsh-redone-server
 
-  # Ensure rsh client is not installed
+  # Ensure rsh client is not installed CIS-2.3.2
   echo
   echo \*\*\*\* Ensure\ rsh\ client\ is\ not\ installed
   dpkg -s rsh-client && apt-get -y remove rsh-client
@@ -182,10 +183,15 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   sed -ri "s/^ntalk/#ntalk/" /etc/inetd.conf
   dpkg -s talkd && apt-get purge -y talkd
 
-  # Ensure talk client is not installed
+  # Ensure talk client is not installed CIS-2.3.3
   echo
   echo \*\*\*\* Ensure\ talk\ client\ is\ not\ installed
   dpkg -s talk && apt-get -y remove talk
+
+  # Ensure telnet client is not installed CIS-2.3.4
+  echo
+  echo \*\*\*\* Ensure\ telnet\ client\ is\ not\ installed
+  dpkg -s telnet && apt-get purge -y telnet
 
   # Ensure telnet server is not enabled CIS-2.1.8
   echo
@@ -290,15 +296,59 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   systemctl disable nfs-kernel-server
   systemctl disable rpcbind
 
-  # Configure Mail Transfer Agent for Local-Only Mode
+  # Ensure DNS Server is not enabled CIS-2.2.8
+  echo
+  echo \*\*\*\* Ensure\ DNS\ Server\ is\ not\ enabled
+  systemctl disable bind9
+
+  # Ensure FTP Server is not enabled CIS-2.2.9
+  echo
+  echo \*\*\*\* Ensure\ FTP\ Server\ is\ not\ enabled
+  systemctl disable vsftpd
+  dpkg -s vsftpd && apt-get purge -y vsftpd
+  dpkg -s proftpd && apt-get purge -y proftpd
+  dpkg -s pure-ftpd && apt-get purge -y pure-ftpd 
+
+  # Ensure HTTP server is not enabled CIS-2.2.10
+  echo
+  echo \*\*\*\* Ensure\ HTTP\ Server\ is\ not\ enabled
+  systemctl disable apache2
+  
+  # Ensure IMAP and POP3 server is not enabled CIS-2.2.11
+  echo
+  echo \*\*\*\* Ensure\ IMAP\ and\ POP3\ Server\ is\ not\ enabled
+  systemctl is-enabled dovecot && systemctl disable dovecot
+  systemctl is-enabled cyrus-imapd && systemctl disable cyrus-imapd
+
+  # Ensure Samba is not enabled CIS-2.2.12
+  echo
+  echo \*\*\*\* Ensure\ Samba\ is\ not\ enabled
+  systemctl is-enabled smbd && systemctl disable smbd
+  systemctl is-enabled samba && systemctl disable samba
+
+  # Ensure HTTP Proxy Server is not enabled CIS-2.2.13
+  echo
+  echo \*\*\*\* Ensure\ HTTP\ proxy\ Server\ is\ not\ enabled
+  systemctl is-enabled squid && systemctl disable squid
+
+  # Ensure SNMP Server is not enabled CIS-2.2.14
+  echo
+  echo \*\*\*\* Ensure\ SNMP\ Server\ is\ not\ enabled
+  systemctl is-enabled snmpd && systemctl disable snmpd
+
+  # Configure Mail Transfer Agent for Local-Only Mode CIS-2.2.15
   echo
   echo \*\*\*\* Configure\ Mail\ Transfer\ Agent\ for\ Local-Only\ Mode
   echo Configure\ Mail\ Transfer\ Agent\ for\ Local-Only\ Mode Linux custom object not configured.
+  if [ -f /etc/postfix/main.cf ]; then
+	sed -ri "s/^inet_interfaces\s*=\s*.*/inet_interfaces = localhost/g" /etc/postfix/main.cf
+  fi 
 
-  # Ensure rsync service is not enabled
+  # Ensure rsync service is not enabled CIS-2.2.16
   echo
   echo \*\*\*\* Ensure\ rsync\ service\ is\ not\ enabled
   dpkg -s rsync && sed -ri "s/^(\s*RSYNC_ENABLE\s*=\s*)\S+(\s*)/\1false\2/" /etc/default/rsync
+  systemctl is-enabled rsync && systemctl disable rsync
 
   # Disable IP Forwarding
   echo
