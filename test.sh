@@ -1,15 +1,8 @@
-#!/bin/bash
 echo
-  echo \*\*\*\* mounting\ of\ cramfs\ filesystems\ is\ disabled
-  echo "install cramfs /bin/true
-install freevxfs /bin/true
-install jffs2 /bin/true
-install hfs /bin/true
-install hfsplus /bin/true
-install squashfs /bin/true
-install udf /bin/true
-install vfat /bin/true
-install dccp /bin/true
-install sctp /bin/true
-install rds /bin/true
-install tipc /bin/true" > /etc/modprobe.d/CIS.conf
+  echo \*\*\*\* Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality
+  egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+try_first_pass)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1try_first_pass \2/ }' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
+  egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+retry=[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1retry=3 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*\s+)retry=[0-9]+(\s+.*)?$/\1retry=3\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
+  egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+minlen=[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1minlen=14 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*\s+)minlen=[0-9]+(\s+.*)?$/\1minlen=14\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
+  egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+dcredit=-?[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1dcredit=-1 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*\s+)dcredit=-?[0-9]+(\s+.*)?$/\1dcredit=-1\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
+  egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+ucredit=-?[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1ucredit=-1 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*\s+)ucredit=-?[0-9]+(\s+.*)?$/\1ucredit=-1\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
+  egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+ocredit=-?[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1ocredit=-1 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*\s+)ocredit=-?[0-9]+(\s+.*)?$/\1ocredit=-1\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.

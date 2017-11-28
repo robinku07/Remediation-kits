@@ -541,19 +541,19 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   chmod g-r-w-x,o-r-w-x /etc/cron.weekly/
   chown 0:0 /etc/cron.weekly/
 
-  # Set User/Group Owner and Permission on /etc/cron.monthly
+  # Set User/Group Owner and Permission on /etc/cron.monthly CIS-5.1.6
   echo
   echo \*\*\*\* Set\ User/Group\ Owner\ and\ Permission\ on\ /etc/cron.monthly
   chmod g-r-w-x,o-r-w-x /etc/cron.monthly/
   chown 0:0 /etc/cron.monthly/
 
-  # Set User/Group Owner and Permission on /etc/cron.d
+  # Set User/Group Owner and Permission on /etc/cron.d CIS-5.1.7
   echo
   echo \*\*\*\* Set\ User/Group\ Owner\ and\ Permission\ on\ /etc/cron.d
   chmod g-r-w-x,o-r-w-x /etc/cron.d/
   chown 0:0 /etc/cron.d/
 
-  # Restrict at/cron to Authorized Users
+  # Restrict at/cron to Authorized Users CIS-5.1.8
   echo
   echo \*\*\*\* Restrict\ at/cron\ to\ Authorized\ Users
   rm -rf /etc/cron.deny
@@ -565,90 +565,99 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   chmod g-r-w-x,o-r-w-x /etc/at.allow
   chown 0:0 /etc/at.allow
 
-  # Set Password Creation Requirement Parameters Using pam_cracklib
+  # Set Password Creation Requirement Parameters Using pam_pwquality CIS-5.3.1
   echo
-  echo \*\*\*\* Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_cracklib
-  egrep -q "^\s*password\s+requisite\s+pam_cracklib.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_cracklib.so\s+/ { /^\s*password\s+requisite\s+pam_cracklib.so(\s+\S+)*(\s+try_first_pass)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_cracklib.so\s+)(.*)$/\1try_first_pass \2/ }' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_cracklib - /etc/pam.d/common-password not configured.
-  egrep -q "^\s*password\s+requisite\s+pam_cracklib.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_cracklib.so\s+/ { /^\s*password\s+requisite\s+pam_cracklib.so(\s+\S+)*(\s+retry=[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_cracklib.so\s+)(.*)$/\1retry=3 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_cracklib.so(\s+\S+)*\s+)retry=[0-9]+(\s+.*)?$/\1retry=3\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_cracklib - /etc/pam.d/common-password not configured.
-  egrep -q "^\s*password\s+requisite\s+pam_cracklib.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_cracklib.so\s+/ { /^\s*password\s+requisite\s+pam_cracklib.so(\s+\S+)*(\s+minlen=[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_cracklib.so\s+)(.*)$/\1minlen=14 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_cracklib.so(\s+\S+)*\s+)minlen=[0-9]+(\s+.*)?$/\1minlen=14\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_cracklib - /etc/pam.d/common-password not configured.
-  egrep -q "^\s*password\s+requisite\s+pam_cracklib.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_cracklib.so\s+/ { /^\s*password\s+requisite\s+pam_cracklib.so(\s+\S+)*(\s+dcredit=-?[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_cracklib.so\s+)(.*)$/\1dcredit=-1 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_cracklib.so(\s+\S+)*\s+)dcredit=-?[0-9]+(\s+.*)?$/\1dcredit=-1\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_cracklib - /etc/pam.d/common-password not configured.
-  egrep -q "^\s*password\s+requisite\s+pam_cracklib.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_cracklib.so\s+/ { /^\s*password\s+requisite\s+pam_cracklib.so(\s+\S+)*(\s+ucredit=-?[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_cracklib.so\s+)(.*)$/\1ucredit=-1 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_cracklib.so(\s+\S+)*\s+)ucredit=-?[0-9]+(\s+.*)?$/\1ucredit=-1\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_cracklib - /etc/pam.d/common-password not configured.
-  egrep -q "^\s*password\s+requisite\s+pam_cracklib.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_cracklib.so\s+/ { /^\s*password\s+requisite\s+pam_cracklib.so(\s+\S+)*(\s+ocredit=-?[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_cracklib.so\s+)(.*)$/\1ocredit=-1 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_cracklib.so(\s+\S+)*\s+)ocredit=-?[0-9]+(\s+.*)?$/\1ocredit=-1\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_cracklib - /etc/pam.d/common-password not configured.
-  egrep -q "^\s*password\s+requisite\s+pam_cracklib.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_cracklib.so\s+/ { /^\s*password\s+requisite\s+pam_cracklib.so(\s+\S+)*(\s+lcredit=-?[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_cracklib.so\s+)(.*)$/\1lcredit=-1 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_cracklib.so(\s+\S+)*\s+)lcredit=-?[0-9]+(\s+.*)?$/\1lcredit=-1\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_cracklib - /etc/pam.d/common-password not configured.
+  echo \*\*\*\* Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality
+  egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+try_first_pass)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1try_first_pass \2/ }' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
+  egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+retry=[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1retry=3 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*\s+)retry=[0-9]+(\s+.*)?$/\1retry=3\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
+  egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+minlen=[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1minlen=14 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*\s+)minlen=[0-9]+(\s+.*)?$/\1minlen=14\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
+  egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+dcredit=-?[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1dcredit=-1 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*\s+)dcredit=-?[0-9]+(\s+.*)?$/\1dcredit=-1\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
+  egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+ucredit=-?[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1ucredit=-1 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*\s+)ucredit=-?[0-9]+(\s+.*)?$/\1ucredit=-1\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
+  egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+ocredit=-?[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1ocredit=-1 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*\s+)ocredit=-?[0-9]+(\s+.*)?$/\1ocredit=-1\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
+  egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+lcredit=-?[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1lcredit=-1 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*\s+)lcredit=-?[0-9]+(\s+.*)?$/\1lcredit=-1\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
 
-  # Limit Password Reuse
+  # Limit Password Reuse CIS-5.3.3
   echo
   echo \*\*\*\* Limit\ Password\ Reuse
   egrep -q "^\s*password\s+sufficient\s+pam_unix.so(\s+.*)$" /etc/pam.d/common-password && sed -ri '/^\s*password\s+sufficient\s+pam_unix.so\s+/ { /^\s*password\s+sufficient\s+pam_unix.so(\s+\S+)*(\s+remember=[0-9]+)(\s+.*)?$/! s/^(\s*password\s+sufficient\s+pam_unix.so\s+)(.*)$/\1remember=5 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+sufficient\s+pam_unix.so(\s+\S+)*\s+)remember=[0-9]+(\s+.*)?$/\1remember=5\3/' /etc/pam.d/common-password || echo Limit\ Password\ Reuse - /etc/pam.d/common-password not configured.
 
-  # Set SSH Protocol to 2
+  # Ensure password hashing algorithm is SHA-512 CIS-5.3.4
+  echo
+  echo \*\*\*\* Ensure\ password\ hashing\ algorithm\ is\ SHA-512
+  egrep -q "^\s*password\s+\[\S+\s+\S+\]\s+pam_unix.so\s+\S*.*" /etc/pam.d/common-password && sed -ri '/^\s*password\s+\[\S+\s+\S+\]\s+pam_unix.so\s+\S*.*/ { /^\s*password\s+\[\S+\s+\S+\]\s+pam_unix.so\s+\S*.*(\s+sha512)(\s+.*)?$/! s/^(\s*password\s+\[\S+\s+\S+\]\s+pam_unix.so\s+\S*.*\s+)(.*)$/\1sha512 \2/ }' /etc/pam.d/common-password || echo Ensure\ password\ hashing\ algorithm\ is\ SHA-512 - /etc/pam.d/common-password not configured.
+  # Set SSH Protocol to 2 CIS-5.2.2
   echo
   echo \*\*\*\* Set\ SSH\ Protocol\ to\ 2
   egrep -q "^(\s*)Protocol\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)Protocol\s+\S+(\s*#.*)?\s*$/\1Protocol 2\2/" /etc/ssh/sshd_config || echo "Protocol 2" >> /etc/ssh/sshd_config
 
-  # Set LogLevel to INFO
+  # Set LogLevel to INFO CIS-5.2.3
   echo
   echo \*\*\*\* Set\ LogLevel\ to\ INFO
   egrep -q "^(\s*)LogLevel\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)LogLevel\s+\S+(\s*#.*)?\s*$/\1LogLevel INFO\2/" /etc/ssh/sshd_config || echo "LogLevel INFO" >> /etc/ssh/sshd_config
 
-  # Set Permissions on /etc/ssh/sshd_config
+  # Set Permissions on /etc/ssh/sshd_config CIS-5.2.1
   echo
   echo \*\*\*\* Set\ Permissions\ on\ /etc/ssh/sshd_config
   chown 0:0 /etc/ssh/sshd_config
   chmod u+r+w-x,g-r-w-x,o-r-w-x /etc/ssh/sshd_config
 
-  # Disable SSH X11 Forwarding
+  # Disable SSH X11 Forwarding CIS-5.2.4
   echo
   echo \*\*\*\* Disable\ SSH\ X11\ Forwarding
   egrep -q "^(\s*)X11Forwarding\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)X11Forwarding\s+\S+(\s*#.*)?\s*$/\1X11Forwarding no\2/" /etc/ssh/sshd_config || echo "X11Forwarding no" >> /etc/ssh/sshd_config
 
-  # Set SSH MaxAuthTries to 4 or Less
+  # Set SSH MaxAuthTries to 4 or Less CIS-5.2.5
   echo
   echo \*\*\*\* Set\ SSH\ MaxAuthTries\ to\ 4\ or\ Less
   egrep -q "^(\s*)MaxAuthTries\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)MaxAuthTries\s+\S+(\s*#.*)?\s*$/\1MaxAuthTries 4\2/" /etc/ssh/sshd_config || echo "MaxAuthTries 4" >> /etc/ssh/sshd_config
 
-  # Set SSH IgnoreRhosts to Yes
+  # Set SSH IgnoreRhosts to Yes CIS-5.2.6
   echo
   echo \*\*\*\* Set\ SSH\ IgnoreRhosts\ to\ Yes
   egrep -q "^(\s*)IgnoreRhosts\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)IgnoreRhosts\s+\S+(\s*#.*)?\s*$/\1IgnoreRhosts yes\2/" /etc/ssh/sshd_config || echo "IgnoreRhosts yes" >> /etc/ssh/sshd_config
 
-  # Set SSH HostbasedAuthentication to No
+  # Set SSH HostbasedAuthentication to No CIS-5.2.7
   echo
   echo \*\*\*\* Set\ SSH\ HostbasedAuthentication\ to\ No
   egrep -q "^(\s*)HostbasedAuthentication\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)HostbasedAuthentication\s+\S+(\s*#.*)?\s*$/\1HostbasedAuthentication no\2/" /etc/ssh/sshd_config || echo "HostbasedAuthentication no" >> /etc/ssh/sshd_config
 
-  # Disable SSH Root Login
+  # Disable SSH Root Login CIS-5.2.8
   echo
   echo \*\*\*\* Disable\ SSH\ Root\ Login
   egrep -q "^(\s*)PermitRootLogin\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)PermitRootLogin\s+\S+(\s*#.*)?\s*$/\1PermitRootLogin no\2/" /etc/ssh/sshd_config || echo "PermitRootLogin no" >> /etc/ssh/sshd_config
 
-  # Set SSH PermitEmptyPasswords to No
+  # Set SSH PermitEmptyPasswords to No CIS-5.2.9
   echo
   echo \*\*\*\* Set\ SSH\ PermitEmptyPasswords\ to\ No
   egrep -q "^(\s*)PermitEmptyPasswords\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)PermitEmptyPasswords\s+\S+(\s*#.*)?\s*$/\1PermitEmptyPasswords no\2/" /etc/ssh/sshd_config || echo "PermitEmptyPasswords no" >> /etc/ssh/sshd_config
 
-  # Do Not Allow Users to Set Environment Options
+  # Ensure SSH PermitUserEnvironment is disabled CIS-5.2.10
   echo
-  echo \*\*\*\* Do\ Not\ Allow\ Users\ to\ Set\ Environment\ Options
+  echo \*\*\*\* Ensure\ SSH\ PermitUserEnvironment\ is\ disabled
   egrep -q "^(\s*)PermitUserEnvironment\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)PermitUserEnvironment\s+\S+(\s*#.*)?\s*$/\1PermitUserEnvironment no\2/" /etc/ssh/sshd_config || echo "PermitUserEnvironment no" >> /etc/ssh/sshd_config
 
-  # Use Only Approved Cipher in Counter Mode
+  # Use Only Approved Cipher in Counter Mode CIS-5.2.11 --- Need Some Re-work
   echo
   echo \*\*\*\* Use\ Only\ Approved\ Cipher\ in\ Counter\ Mode
   egrep -q "^(\s*)Ciphers\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)Ciphers\s+\S+(\s*#.*)?\s*$/\1Ciphers aes128-ctr,aes192-ctr,aes256-ctr\2/" /etc/ssh/sshd_config || echo "Ciphers aes128-ctr,aes192-ctr,aes256-ctr" >> /etc/ssh/sshd_config
 
-  # Set Idle Timeout Interval for User Login
+  # Set Idle Timeout Interval for User Login CIS-5.2.12
   echo
   echo \*\*\*\* Set\ Idle\ Timeout\ Interval\ for\ User\ Login
   egrep -q "^(\s*)ClientAliveInterval\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)ClientAliveInterval\s+\S+(\s*#.*)?\s*$/\1ClientAliveInterval 300\2/" /etc/ssh/sshd_config || echo "ClientAliveInterval 300" >> /etc/ssh/sshd_config
   egrep -q "^(\s*)ClientAliveCountMax\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)ClientAliveCountMax\s+\S+(\s*#.*)?\s*$/\1ClientAliveCountMax 0\2/" /etc/ssh/sshd_config || echo "ClientAliveCountMax 0" >> /etc/ssh/sshd_config
 
-  # Limit Access via SSH
+  # Ensure SSH LoginGraceTime is set to one minute or less CIS-5.2.13
+  echo
+  echo \*\*\*\* Ensure\ SSH\ LoginGraceTime\ is\ set\ to\ one\ minute\ or\ less
+  egrep -q "^(\s*)LoginGraceTime\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)LoginGraceTime\s+\S+(\s*#.*)?\s*$/\1LoginGraceTime 60\2/" /etc/ssh/sshd_config || echo "LoginGraceTime 60" >> /etc/ssh/sshd_config
+
+  # Limit Access via SSH CIS-5.2.14 (We can not decide the membership)
   echo
   echo \*\*\*\* Limit\ Access\ via\ SSH
   echo Limit\ Access\ via\ SSH not configured.
 
-  # Set SSH Banner
+  # Set SSH Banner CIS-5.2.14
   echo
   echo \*\*\*\* Set\ SSH\ Banner
   egrep -q "^(\s*)Banner\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)Banner\s+\S+(\s*#.*)?\s*$/\1Banner /etc/issue.net\2/" /etc/ssh/sshd_config || echo "Banner /etc/issue.net" >> /etc/ssh/sshd_config
@@ -658,19 +667,19 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo \*\*\*\* Restrict\ Access\ to\ the\ su\ Command
   egrep -q "^\s*auth\s+required\s+pam_wheel.so(\s+.*)?$" /etc/pam.d/su && sed -ri '/^\s*auth\s+required\s+pam_wheel.so(\s+.*)?$/ { /^\s*auth\s+required\s+pam_wheel.so(\s+\S+)*(\s+use_uid)(\s+.*)?$/! s/^(\s*auth\s+required\s+pam_wheel.so)(\s+.*)?$/\1 use_uid\2/ }' /etc/pam.d/su || echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su
 
-  # Set Password Expiration Days
+  # Set Password Expiration Days CIS-5.4.1.1
   echo
   echo \*\*\*\* Set\ Password\ Expiration\ Days
   egrep -q "^(\s*)PASS_MAX_DAYS\s+\S+(\s*#.*)?\s*$" /etc/login.defs && sed -ri "s/^(\s*)PASS_MAX_DAYS\s+\S+(\s*#.*)?\s*$/\1PASS_MAX_DAYS 90\2/" /etc/login.defs || echo "PASS_MAX_DAYS 90" >> /etc/login.defs
   egrep "^[^:]+:[^\!\*]" /etc/shadow | cut -f1 -d ":" | xargs -n1 chage --maxdays 90
 
-  # Set Password Change Minimum Number of Days
+  # Set Password Change Minimum Number of Days CIS-5.4.1.2
   echo
   echo \*\*\*\* Set\ Password\ Change\ Minimum\ Number\ of\ Days
   egrep -q "^(\s*)PASS_MIN_DAYS\s+\S+(\s*#.*)?\s*$" /etc/login.defs && sed -ri "s/^(\s*)PASS_MIN_DAYS\s+\S+(\s*#.*)?\s*$/\1PASS_MIN_DAYS 7\2/" /etc/login.defs || echo "PASS_MIN_DAYS 7" >> /etc/login.defs
   egrep "^[^:]+:[^\!\*]" /etc/shadow  | cut -f1 -d ":" | xargs -n1 chage --mindays 7
 
-  # Set Password Expiring Warning Days
+  # Set Password Expiring Warning Days CIS-5.4.1.3
   echo
   echo \*\*\*\* Set\ Password\ Expiring\ Warning\ Days
   egrep -q "^(\s*)PASS_WARN_AGE\s+\S+(\s*#.*)?\s*$" /etc/login.defs && sed -ri "s/^(\s*)PASS_WARN_AGE\s+\S+(\s*#.*)?\s*$/\1PASS_WARN_AGE 7\2/" /etc/login.defs || echo "PASS_WARN_AGE 7" >> /etc/login.defs
