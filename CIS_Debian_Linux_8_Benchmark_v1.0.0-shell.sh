@@ -392,100 +392,150 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   egrep -q "^(\s*)net.ipv4.conf.default.secure_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.default.secure_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.default.secure_redirects = 0\2/" /etc/sysctl.conf || echo "net.ipv4.conf.default.secure_redirects = 0" >> /etc/sysctl.conf
   sysctl -w net.ipv4.conf.all.secure_redirects=0
   sysctl -w net.ipv4.conf.default.secure_redirects=0
-  # Log Suspicious Packets
+
+  # Log Suspicious Packets CIS-3.2.4
   echo
   echo \*\*\*\* Log\ Suspicious\ Packets
   egrep -q "^(\s*)net.ipv4.conf.all.log_martians\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.all.log_martians\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.all.log_martians = 1\2/" /etc/sysctl.conf || echo "net.ipv4.conf.all.log_martians = 1" >> /etc/sysctl.conf
   egrep -q "^(\s*)net.ipv4.conf.default.log_martians\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.default.log_martians\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.default.log_martians = 1\2/" /etc/sysctl.conf || echo "net.ipv4.conf.default.log_martians = 1" >> /etc/sysctl.conf
+  sysctl -w net.ipv4.conf.all.log_martians=1
+  sysctl -w net.ipv4.conf.default.log_martians=1
 
-  # Enable Ignore Broadcast Requests
+  # Enable Ignore Broadcast Requests CIS-3.2.5
   echo
   echo \*\*\*\* Enable\ Ignore\ Broadcast\ Requests
   egrep -q "^(\s*)net.ipv4.icmp_echo_ignore_broadcasts\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.icmp_echo_ignore_broadcasts\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.icmp_echo_ignore_broadcasts = 1\2/" /etc/sysctl.conf || echo "net.ipv4.icmp_echo_ignore_broadcasts = 1" >> /etc/sysctl.conf
+  sysctl -w net.ipv4.icmp_echo_ignore_broadcasts=1
 
-  # Enable Bad Error Message Protection
+  # Enable Bad Error Message Protection CIS-3.2.6
   echo
   echo \*\*\*\* Enable\ Bad\ Error\ Message\ Protection
   egrep -q "^(\s*)net.ipv4.icmp_ignore_bogus_error_responses\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.icmp_ignore_bogus_error_responses\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.icmp_ignore_bogus_error_responses = 1\2/" /etc/sysctl.conf || echo "net.ipv4.icmp_ignore_bogus_error_responses = 1" >> /etc/sysctl.conf
+  sysctl -w net.ipv4.icmp_ignore_bogus_error_responses=1
 
-  # Enable RFC-recommended Source Route Validation
+  # Enable RFC-recommended Source Route Validation CIS-3.2.7
   echo
   echo \*\*\*\* Enable\ RFC-recommended\ Source\ Route\ Validation
   egrep -q "^(\s*)net.ipv4.conf.all.rp_filter\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.all.rp_filter\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.all.rp_filter = 1\2/" /etc/sysctl.conf || echo "net.ipv4.conf.all.rp_filter = 1" >> /etc/sysctl.conf
   egrep -q "^(\s*)net.ipv4.conf.default.rp_filter\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.default.rp_filter\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.default.rp_filter = 1\2/" /etc/sysctl.conf || echo "net.ipv4.conf.default.rp_filter = 1" >> /etc/sysctl.conf
+  sysctl -w net.ipv4.conf.default.rp_filter=1
+  sysctl -w net.ipv4.conf.all.rp_filter=1
 
-  # Enable TCP SYN Cookies
+  # Enable TCP SYN Cookies CIS-3.2.8
   echo
   echo \*\*\*\* Enable\ TCP\ SYN\ Cookies
   egrep -q "^(\s*)net.ipv4.tcp_syncookies\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.tcp_syncookies\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.tcp_syncookies = 1\2/" /etc/sysctl.conf || echo "net.ipv4.tcp_syncookies = 1" >> /etc/sysctl.conf
+  sysctl -w net.ipv4.tcp_syncookies=1
 
-  # Install TCP Wrappers
+  # Install TCP Wrappers CIS-3.4.1
   echo
   echo \*\*\*\* Install\ TCP\ Wrappers
   dpkg -s tcpd || apt-get -y install tcpd
 
-  # Verify Permissions on /etc/hosts.allow
+  # Ensure /etc/hosts.allow is configured CIS-3.4.2 will vary as per the services configuration
+  
+  # Ensure /etc/hosts.deny is configured CIS-3.4.3
+  echo
+  echo \*\*\*\* Ensure\ /etc/hosts.deny\ is\ configured
+  egrep -q "^ALL:\s*ALL" /etc/hosts.deny || echo "ALL: ALL" >> /etc/hosts.deny
+
+  # Verify Permissions on /etc/hosts.allow CIS-3.4.4
   echo
   echo \*\*\*\* Verify\ Permissions\ on\ /etc/hosts.allow
   chmod u+r+w-x,g+r-w-x,o+r-w-x /etc/hosts.allow
 
-  # Verify Permissions on /etc/hosts.deny
+  # Verify Permissions on /etc/hosts.deny CIS-3.4.5
   echo
   echo \*\*\*\* Verify\ Permissions\ on\ /etc/hosts.deny
   chmod u+r+w-x,g+r-w-x,o+r-w-x /etc/hosts.deny
 
-  # Ensure Firewall is active
+  # Ensure Firewall is active CIS-3.6.1
   echo
   echo \*\*\*\* Ensure\ Firewall\ is\ active
   dpkg -s iptables || apt-get -y install iptables
   dpkg -s iptables-persistent || apt-get -y install iptables-persistent
   update-rc.d netfilter-persistent enable
 
-  # Install the rsyslog package
+  # Ensure default deny firewall policy CIS-3.6.2
+  echo
+  echo \*\*\*\* Ensure\ default\ deny\ firewall\ policy
+  # Flush IPtables rules 
+  iptables -F 
+  # Ensure default deny firewall policy 
+  iptables -P INPUT DROP 
+  iptables -P OUTPUT DROP
+  iptables -P FORWARD DROP 
+  
+  # Ensure loopback traffic is configured CIS-3.6.3
+  echo 
+  echo \*\*\*\* Ensure\ loopback\ traffic\ is\ configured
+  iptables -A INPUT -i lo -j ACCEPT 
+  iptables -A OUTPUT -o lo -j ACCEPT 
+  iptables -A INPUT -s 127.0.0.0/8 -j DROP 
+
+  # Ensure outbound and established connections are configured CIS-3.6.4
+  iptables -A OUTPUT -p tcp -m state --state NEW,ESTABLISHED -j ACCEPT 
+  iptables -A OUTPUT -p udp -m state --state NEW,ESTABLISHED -j ACCEPT 
+  iptables -A OUTPUT -p icmp -m state --state NEW,ESTABLISHED -j ACCEPT 
+  iptables -A INPUT -p tcp -m state --state ESTABLISHED -j ACCEPT 
+  iptables -A INPUT -p udp -m state --state ESTABLISHED -j ACCEPT 
+  iptables -A INPUT -p icmp -m state --state ESTABLISHED -j ACCEPT 
+
+  # Open inbound ssh(tcp port 22) connections CIS-3.6.5
+  echo
+  echo \*\*\*\* Ensure\ firewall\ rules\ exist\ for\ all\ open\ ports
+  iptables -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
+
+  # Install the rsyslog package CIS-4.2.3
   echo
   echo \*\*\*\* Install\ the\ rsyslog\ package
   dpkg -s rsyslog || apt-get -y install rsyslog
 
-  # Ensure the rsyslog Service is activated
+  # Ensure the rsyslog Service is activated CIS-4.2.1.1
   echo
   echo \*\*\*\* Ensure\ the\ rsyslog\ Service\ is\ activated
   systemctl enable rsyslog
 
-  # Create and Set Permissions on rsyslog Log Files
+  # Create and Set Permissions on rsyslog Log Files CIS-4.2.1.3
   echo
-  echo \*\*\*\* Create\ and\ Set\ Permissions\ on\ rsyslog\ Log\ Files
-  echo Create\ and\ Set\ Permissions\ on\ rsyslog\ Log\ Files Linux custom object not configured.
+  echo \*\*\*\* Ensure\ rsyslog\ default\ file\ permissions\ configured
+  egrep -q '^(\$)FileCreateMode(\s.*)0[1,5,6][1,4]0$' /etc/rsyslog.conf || sed -ri 's/^\$FileCreateMode\s*.*/\$FileCreateMode 0640/' /etc/rsyslog.conf
 
-  # Configure rsyslog to Send Logs to a Remote Log Host
+  # Configure rsyslog to Send Logs to a Remote Log Host CIS-4.2.1.4
   echo
   echo \*\*\*\* Configure\ rsyslog\ to\ Send\ Logs\ to\ a\ Remote\ Log\ Host
   echo Configure\ rsyslog\ to\ Send\ Logs\ to\ a\ Remote\ Log\ Host not configured.
 
-  # Enable cron Daemon
+  # Ensure permissions on all logfiles are configured CIS-4.2.4 
+  echo
+  echo \*\*\*\* Ensure\ permissions\ on\ all\ logfiles\ are\ configured
+  chmod -R g-wx,o-rwx /var/log/*
+
+  # Enable cron Daemon CIS-5.1.1
   echo
   echo \*\*\*\* Enable\ cron\ Daemon
-  systemctl enable cron
+  systemctl is-enabled cron || systemctl enable cron
   systemctl enable anacron
 
-  # Set User/Group Owner and Permission on /etc/crontab
+  # Set User/Group Owner and Permission on /etc/crontab CIS-5.1.2
   echo
   echo \*\*\*\* Set\ User/Group\ Owner\ and\ Permission\ on\ /etc/crontab
   chmod g-r-w-x,o-r-w-x /etc/crontab
   chown 0:0 /etc/crontab
 
-  # Set User/Group Owner and Permission on /etc/cron.hourly
+  # Set User/Group Owner and Permission on /etc/cron.hourly CIS-5.1.3
   echo
   echo \*\*\*\* Set\ User/Group\ Owner\ and\ Permission\ on\ /etc/cron.hourly
   chmod g-r-w-x,o-r-w-x /etc/cron.hourly/
   chown 0:0 /etc/cron.hourly/
 
-  # Set User/Group Owner and Permission on /etc/cron.daily
+  # Set User/Group Owner and Permission on /etc/cron.daily CIS-5.1.4
   echo
   echo \*\*\*\* Set\ User/Group\ Owner\ and\ Permission\ on\ /etc/cron.daily
   chmod g-r-w-x,o-r-w-x /etc/cron.daily/
   chown 0:0 /etc/cron.daily/
 
-  # Set User/Group Owner and Permission on /etc/cron.weekly
+  # Set User/Group Owner and Permission on /etc/cron.weekly CIS-5.1.5
   echo
   echo \*\*\*\* Set\ User/Group\ Owner\ and\ Permission\ on\ /etc/cron.weekly
   chmod g-r-w-x,o-r-w-x /etc/cron.weekly/
