@@ -193,6 +193,11 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo \*\*\*\* Ensure\ telnet\ client\ is\ not\ installed
   dpkg -s telnet && apt-get purge -y telnet
 
+  # Ensure LDAP client is not installed CIS-2.3.5
+  echo
+  echo \*\*\*\* Ensure\ LDAP\ client\ is\ not\ installed
+  dpkg -s ldap-utils && apt-get purge -y ldap-utils
+
   # Ensure telnet server is not enabled CIS-2.1.8
   echo
   echo \*\*\*\* Ensure\ telnet\ server\ is\ not\ enabled
@@ -350,35 +355,43 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   dpkg -s rsync && sed -ri "s/^(\s*RSYNC_ENABLE\s*=\s*)\S+(\s*)/\1false\2/" /etc/default/rsync
   systemctl is-enabled rsync && systemctl disable rsync
 
-  # Disable IP Forwarding
+  # Disable IP Forwarding CIS-3.1.1
   echo
   echo \*\*\*\* Disable\ IP\ Forwarding
   egrep -q "^(\s*)net.ipv4.ip_forward\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.ip_forward\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.ip_forward = 0\2/" /etc/sysctl.conf || echo "net.ipv4.ip_forward = 0" >> /etc/sysctl.conf
+  sysctl -w net.ipv4.ip_forward=0
 
-  # Disable Send Packet Redirects
+  # Disable Send Packet Redirects CIS-3.1.2
   echo
   echo \*\*\*\* Disable\ Send\ Packet\ Redirects
   egrep -q "^(\s*)net.ipv4.conf.all.send_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.all.send_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.all.send_redirects = 0\2/" /etc/sysctl.conf || echo "net.ipv4.conf.all.send_redirects = 0" >> /etc/sysctl.conf
   egrep -q "^(\s*)net.ipv4.conf.default.send_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.default.send_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.default.send_redirects = 0\2/" /etc/sysctl.conf || echo "net.ipv4.conf.default.send_redirects = 0" >> /etc/sysctl.conf
+  sysctl -w net.ipv4.conf.default.send_redirects=0
+  sysctl -w net.ipv4.conf.all.send_redirects=0
 
-  # Disable Source Routed Packet Acceptance
+  # Disable Source Routed Packet Acceptance CIS-3.2.1
   echo
   echo \*\*\*\* Disable\ Source\ Routed\ Packet\ Acceptance
   egrep -q "^(\s*)net.ipv4.conf.all.accept_source_route\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.all.accept_source_route\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.all.accept_source_route = 0\2/" /etc/sysctl.conf || echo "net.ipv4.conf.all.accept_source_route = 0" >> /etc/sysctl.conf
   egrep -q "^(\s*)net.ipv4.conf.default.accept_source_route\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.default.accept_source_route\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.default.accept_source_route = 0\2/" /etc/sysctl.conf || echo "net.ipv4.conf.default.accept_source_route = 0" >> /etc/sysctl.conf
+  sysctl -w net.ipv4.conf.all.accept_source_route=0
+  sysctl -w net.ipv4.conf.default.accept_source_route=0
 
-  # Disable ICMP Redirect Acceptance
+  # Disable ICMP Redirect Acceptance CIS-3.2.2
   echo
   echo \*\*\*\* Disable\ ICMP\ Redirect\ Acceptance
   egrep -q "^(\s*)net.ipv4.conf.all.accept_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.all.accept_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.all.accept_redirects = 0\2/" /etc/sysctl.conf || echo "net.ipv4.conf.all.accept_redirects = 0" >> /etc/sysctl.conf
   egrep -q "^(\s*)net.ipv4.conf.default.accept_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.default.accept_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.default.accept_redirects = 0\2/" /etc/sysctl.conf || echo "net.ipv4.conf.default.accept_redirects = 0" >> /etc/sysctl.conf
+  sysctl -w net.ipv4.conf.all.accept_redirects=0
+  sysctl -w net.ipv4.conf.default.accept_redirects=0
 
-  # Disable Secure ICMP Redirect Acceptance
+  # Disable Secure ICMP Redirect Acceptance CIS-3.2.3
   echo
   echo \*\*\*\* Disable\ Secure\ ICMP\ Redirect\ Acceptance
   egrep -q "^(\s*)net.ipv4.conf.all.secure_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.all.secure_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.all.secure_redirects = 0\2/" /etc/sysctl.conf || echo "net.ipv4.conf.all.secure_redirects = 0" >> /etc/sysctl.conf
   egrep -q "^(\s*)net.ipv4.conf.default.secure_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.default.secure_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.default.secure_redirects = 0\2/" /etc/sysctl.conf || echo "net.ipv4.conf.default.secure_redirects = 0" >> /etc/sysctl.conf
-
+  sysctl -w net.ipv4.conf.all.secure_redirects=0
+  sysctl -w net.ipv4.conf.default.secure_redirects=0
   # Log Suspicious Packets
   echo
   echo \*\*\*\* Log\ Suspicious\ Packets
