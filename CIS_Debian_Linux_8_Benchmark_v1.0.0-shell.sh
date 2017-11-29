@@ -662,7 +662,7 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo \*\*\*\* Set\ SSH\ Banner
   egrep -q "^(\s*)Banner\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)Banner\s+\S+(\s*#.*)?\s*$/\1Banner /etc/issue.net\2/" /etc/ssh/sshd_config || echo "Banner /etc/issue.net" >> /etc/ssh/sshd_config
 
-  # Restrict Access to the su Command
+  # Restrict Access to the su Command CIS-5.6
   echo
   echo \*\*\*\* Restrict\ Access\ to\ the\ su\ Command
   egrep -q "^\s*auth\s+required\s+pam_wheel.so(\s+.*)?$" /etc/pam.d/su && sed -ri '/^\s*auth\s+required\s+pam_wheel.so(\s+.*)?$/ { /^\s*auth\s+required\s+pam_wheel.so(\s+\S+)*(\s+use_uid)(\s+.*)?$/! s/^(\s*auth\s+required\s+pam_wheel.so)(\s+.*)?$/\1 use_uid\2/ }' /etc/pam.d/su || echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su
@@ -685,7 +685,13 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   egrep -q "^(\s*)PASS_WARN_AGE\s+\S+(\s*#.*)?\s*$" /etc/login.defs && sed -ri "s/^(\s*)PASS_WARN_AGE\s+\S+(\s*#.*)?\s*$/\1PASS_WARN_AGE 7\2/" /etc/login.defs || echo "PASS_WARN_AGE 7" >> /etc/login.defs
   egrep "^[^:]+:[^\!\*]" /etc/shadow  | cut -f1 -d ":" | xargs -n1 chage --warndays 7
 
-  # Disable System Accounts
+  # Ensure inactive password lock is 30 days or less CIS-5.4.1.4
+  echo
+  echo \*\*\*\* Ensure\ inactive\ password\ lock\ is\ 30\ days\ or\ less
+  egrep -q "^(\s*)INACTIVE\s*=" /etc/default/useradd && sed -r "s/^(\s*)INACTIVE\s*=\s*\S+$/\1INACTIVE=30/" /etc/default/useradd || echo "INACTIVE=30" >> /etc/default/useradd
+  egrep ^[^:]+:[^\!*] /etc/shadow | cut -d: -f1
+
+  # Disable System Accounts CIS-5.4.2
   echo
   echo \*\*\*\* Disable\ System\ Accounts
   for user in `awk -F: '($3 < 1000) {print $1 }' /etc/passwd`; do
@@ -700,21 +706,21 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   done
 
 
-  # Set Default Group for root Account
+  # Set Default Group for root Account CIS-5.4.3
   echo
   echo \*\*\*\* Set\ Default\ Group\ for\ root\ Account
   usermod -g 0 root
 
-  # Set Default umask for Users
+  # Set Default umask for Users CIS-5.4.4
   echo
   echo \*\*\*\* Set\ Default\ umask\ for\ Users
   egrep -q "^(\s*)umask\s+\S+(\s*#.*)?\s*$" /etc/bash.bashrc && sed -ri "s/^(\s*)umask\s+\S+(\s*#.*)?\s*$/\1umask 077\2/" /etc/bash.bashrc || echo "umask 077" >> /etc/bash.bashrc
   egrep -q "^(\s*)umask\s+\S+(\s*#.*)?\s*$" /etc/profile.d/cis.sh && sed -ri "s/^(\s*)umask\s+\S+(\s*#.*)?\s*$/\1umask 077\2/" /etc/profile.d/cis.sh || echo "umask 077" >> /etc/profile.d/cis.sh
 
   # Lock Inactive User Accounts
-  echo
-  echo \*\*\*\* Lock\ Inactive\ User\ Accounts
-  useradd -D -f 35
+#  echo
+#  echo \*\*\*\* Lock\ Inactive\ User\ Accounts
+#  useradd -D -f 35
 
   # Set Warning Banner for Standard Login Services CIS-1.7.1.4 to CIS-1.7.1.6
   echo
@@ -734,62 +740,87 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   sed -ri 's/(\\v|\\r|\\m|\\s)//g' /etc/motd
 
   # We are not remediating the CIS-1.7.2 as we are not using Graphical Interface for any of the Server
-  # Verify Permissions on /etc/passwd
+  # Verify Permissions on /etc/passwd CIS-6.1.2
   echo
   echo \*\*\*\* Verify\ Permissions\ on\ /etc/passwd
+  chown 0:0 /etc/passwd
   chmod u+r+w-x,g+r-w-x,o+r-w-x /etc/passwd
 
-  # Verify Permissions on /etc/shadow
+  # Verify Permissions on /etc/shadow CIS-6.1.3
   echo
   echo \*\*\*\* Verify\ Permissions\ on\ /etc/shadow
+  chown 0:42 /etc/shadow
   chmod u+r+w-x,g+r-w-x,o-r-w-x /etc/shadow
 
-  # Verify Permissions on /etc/group
+  # Verify Permissions on /etc/group CIS-6.1.4
   echo
   echo \*\*\*\* Verify\ Permissions\ on\ /etc/group
-  chmod u+r+w-x,g+r-w-x,o+r-w-x /etc/group
-
-  # Verify User/Group Ownership on /etc/passwd
-  echo
-  echo \*\*\*\* Verify\ User/Group\ Ownership\ on\ /etc/passwd
-  chown 0:0 /etc/passwd
-
-  # Verify User/Group Ownership on /etc/shadow
-  echo
-  echo \*\*\*\* Verify\ User/Group\ Ownership\ on\ /etc/shadow
-  chown 0:42 /etc/shadow
-
-  # Verify User/Group Ownership on /etc/group
-  echo
-  echo \*\*\*\* Verify\ User/Group\ Ownership\ on\ /etc/group
   chown 0:0 /etc/group
+  chmod u+r+w-x,g+r-w-x,o+r-w-x /etc/group
+  
+  # Ensure permissions on /etc/gshadow are configured CIS-6.1.5
+  echo
+  echo \*\*\*\* Verify\ Permissions\ on\ /etc/gshadow
+  chown 0:42 /etc/gshadow
+  chmod u+r+w-x,g-r-w-x,o-r-w-x /etc/gshadow
 
-  # Find Un-owned Files and Directories
+  # Ensure permissions on /etc/passwd- are configured CIS-6.1.6
+  echo
+  echo \*\*\*\* Verify\ Permissions\ on\ /etc/passwd-
+  chown 0:0 /etc/passwd-
+  chmod u+r+w-x,g-r-w-x,o-r-w-x /etc/passwd-
+
+  # Ensure permissions on /etc/shadow- are configured CIS-6.1.7
+  echo
+  echo \*\*\*\* Verify\ Permissions\ on\ /etc/shadow-
+  chown 0:0 /etc/shadow-
+  chmod u+r+w-x,g-r-w-x,o-r-w-x /etc/shadow-
+
+  # Ensure permissions on /etc/group- are configured CIS-6.1.8
+  echo
+  echo \*\*\*\* Verify\ Permissions\ on\ /etc/group-
+  chown 0:0 /etc/group-
+  chmod u+r+w-x,g-r-w-x,o-r-w-x /etc/group-
+
+  # Ensure permissions on /etc/gshadow- are configured CIS-6.1.9
+  echo
+  echo \*\*\*\* Verify\ Permissions\ on\ /etc/gshadow-
+  chown 0:0 /etc/gshadow-
+  chmod u+r+w-x,g-r-w-x,o-r-w-x /etc/gshadow-
+ 
+  # Ensure no world writable files exist CIS-6.1.10
+  echo
+  echo \*\*\*\* Ensure\ no\ world\ writable\ files\ exist
+  df --local -P | awk '{if (NR!=1) print $6}' | xargs -I \'{}\' find \'{}\' -xdev -type f -perm -0002 -exec chmod o-w {} \;
+
+  # Find Un-owned Files and Directories CIS-6.1.11
   echo
   echo \*\*\*\* Find\ Un-owned\ Files\ and\ Directories
   echo Find\ Un-owned\ Files\ and\ Directories Linux custom object not configured.
+  df --local -P | awk '{if (NR!=1) print $6}' | xargs -I \'{}\' find \'{}\' -xdev -nouser -exec chown -R 0:0 {} \;
 
-  # Find Un-grouped Files and Directories
+  # Find Un-grouped Files and Directories CIS-6.1.12
   echo
   echo \*\*\*\* Find\ Un-grouped\ Files\ and\ Directories
   echo Find\ Un-grouped\ Files\ and\ Directories Linux custom object not configured.
+  df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -nogroup -exec chgrp -R 0 {} \;
 
-  # Ensure Password Fields are Not Empty
+  # Ensure Password Fields are Not Empty CIS-6.2.1
   echo
   echo \*\*\*\* Ensure\ Password\ Fields\ are\ Not\ Empty
   echo Ensure\ Password\ Fields\ are\ Not\ Empty not configured.
 
-  # Verify No Legacy &quot;+&quot; Entries Exist in /etc/passwd File
+  # Verify No Legacy &quot;+&quot; Entries Exist in /etc/passwd File CIS-6.2.2
   echo
   echo \*\*\*\* Verify\ No\ Legacy\ \&quot\;\+\&quot\;\ Entries\ Exist\ in\ /etc/passwd\ File
   sed -ri '/^\+:.*$/ d' /etc/passwd
 
-  # Verify No Legacy &quot;+&quot; Entries Exist in /etc/shadow File
+  # Verify No Legacy &quot;+&quot; Entries Exist in /etc/shadow File CIS-6.2.3
   echo
   echo \*\*\*\* Verify\ No\ Legacy\ \&quot\;\+\&quot\;\ Entries\ Exist\ in\ /etc/shadow\ File
   sed -ri '/^\+:.*$/ d' /etc/shadow
 
-  # Verify No Legacy &quot;+&quot; Entries Exist in /etc/group File
+  # Verify No Legacy &quot;+&quot; Entries Exist in /etc/group File CIS-6.2.4
   echo
   echo \*\*\*\* Verify\ No\ Legacy\ \&quot\;\+\&quot\;\ Entries\ Exist\ in\ /etc/group\ File
   sed -ri '/^\+:.*$/ d' /etc/group
@@ -798,6 +829,7 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo
   echo \*\*\*\* Verify\ No\ UID\ 0\ Accounts\ Exist\ Other\ Than\ root
   echo Verify\ No\ UID\ 0\ Accounts\ Exist\ Other\ Than\ root not configured.
+  
 
   # Ensure root PATH Integrity
   echo
