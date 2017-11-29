@@ -825,38 +825,50 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo \*\*\*\* Verify\ No\ Legacy\ \&quot\;\+\&quot\;\ Entries\ Exist\ in\ /etc/group\ File
   sed -ri '/^\+:.*$/ d' /etc/group
 
-  # Verify No UID 0 Accounts Exist Other Than root
+  # Verify No UID 0 Accounts Exist Other Than root CIS-6.2.5
   echo
   echo \*\*\*\* Verify\ No\ UID\ 0\ Accounts\ Exist\ Other\ Than\ root
   echo Verify\ No\ UID\ 0\ Accounts\ Exist\ Other\ Than\ root not configured.
   
 
-  # Ensure root PATH Integrity
+  # Ensure root PATH Integrity CIS-6.2.6
   echo
   echo \*\*\*\* Ensure\ root\ PATH\ Integrity
   echo Ensure\ root\ PATH\ Integrity Linux custom object not configured.
 
-  # Check Permissions on User Home Directories
+  # Ensure all users' home directories exist CIS-6.2.7
+  echo
+  echo \*\*\*\* Ensure\ all\ users\ home\ directories\ exist
+  cat /etc/passwd | awk -F: '{ print $1 " " $3 " " $6 }' | while read user uid dir; do
+        if [ $uid -ge 1000 -a ! -d "$dir" -a $user != "nfsnobody" ]; then
+        echo "The home directory ($dir) of user $user does not exist."
+        echo "Creating Directory ($dir)for $user "
+        mkdir -p $dir
+        chown -R $user:$user $dir
+        fi
+done
+  
+  # Check Permissions on User Home Directories CIS-6.2.8
   echo
   echo \*\*\*\* Check\ Permissions\ on\ User\ Home\ Directories
-  echo Check\ Permissions\ on\ User\ Home\ Directories Linux custom object not configured.
+  echo Check\ Permissions\ on\ User\ Home\ Directories Linux custom object not configured
 
-  # Check User Dot File Permissions
+  # Check User Dot File Permissions CIS-6.2.10
   echo
   echo \*\*\*\* Check\ User\ Dot\ File\ Permissions
   echo Check\ User\ Dot\ File\ Permissions Linux custom object not configured.
 
-  # Check Permissions on User .netrc Files
+  # Check Permissions on User .netrc Files CIS-6.2.13
   echo
   echo \*\*\*\* Check\ Permissions\ on\ User\ .netrc\ Files
   echo Check\ Permissions\ on\ User\ .netrc\ Files Linux custom object not configured.
 
-  # Check for Presence of User .rhosts Files
+  # Check for Presence of User .rhosts Files CIS-6.2.14
   echo
   echo \*\*\*\* Check\ for\ Presence\ of\ User\ .rhosts\ Files
   echo Check\ for\ Presence\ of\ User\ .rhosts\ Files Linux custom object not configured.
 
-  # Check Groups in /etc/passwd
+  # Ensure all groups in /etc/passwd exist in /etc/group CIS-6.2.15
   echo
   echo \*\*\*\* Check\ Groups\ in\ /etc/passwd
   echo Check\ Groups\ in\ /etc/passwd Linux custom object not configured.
@@ -866,42 +878,42 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo \*\*\*\* Check\ That\ Users\ Are\ Assigned\ Valid\ Home\ Directories
   echo Check\ That\ Users\ Are\ Assigned\ Valid\ Home\ Directories Linux custom object not configured.
 
-  # Check User Home Directory Ownership
+  # Check User Home Directory Ownership CIS-6.2.9
   echo
   echo \*\*\*\* Check\ User\ Home\ Directory\ Ownership
   echo Check\ User\ Home\ Directory\ Ownership Linux custom object not configured.
 
-  # Check for Duplicate UIDs
+  # Check for Duplicate UIDs CIS-6.2.16
   echo
   echo \*\*\*\* Check\ for\ Duplicate\ UIDs
   echo Check\ for\ Duplicate\ UIDs Linux custom object not configured.
 
-  # Check for Duplicate GIDs
+  # Check for Duplicate GIDs CIS-6.2.17
   echo
   echo \*\*\*\* Check\ for\ Duplicate\ GIDs
   echo Check\ for\ Duplicate\ GIDs Linux custom object not configured.
 
-  # Check for Duplicate User Names
+  # Check for Duplicate User Names CIS-6.2.18
   echo
   echo \*\*\*\* Check\ for\ Duplicate\ User\ Names
   echo Check\ for\ Duplicate\ User\ Names Linux custom object not configured.
 
-  # Check for Duplicate Group Names
+  # Check for Duplicate Group Names CIS-6.2.19
   echo
   echo \*\*\*\* Check\ for\ Duplicate\ Group\ Names
   echo Check\ for\ Duplicate\ Group\ Names Linux custom object not configured.
 
-  # Check for Presence of User .netrc Files
+  # Check for Presence of User .netrc Files CIS-6.2.12
   echo
   echo \*\*\*\* Check\ for\ Presence\ of\ User\ .netrc\ Files
   echo Check\ for\ Presence\ of\ User\ .netrc\ Files Linux custom object not configured.
 
-  # Check for Presence of User .forward Files
+  # Check for Presence of User .forward Files CIS-6.2.11
   echo
   echo \*\*\*\* Check\ for\ Presence\ of\ User\ .forward\ Files
   echo Check\ for\ Presence\ of\ User\ .forward\ Files Linux custom object not configured.
 
-  # Ensure shadow group is empty
+  # Ensure shadow group is empty CIS-6.2.20
   echo
   echo \*\*\*\* Ensure\ shadow\ group\ is\ empty
   echo Ensure\ shadow\ group\ is\ empty Linux custom object not configured.
