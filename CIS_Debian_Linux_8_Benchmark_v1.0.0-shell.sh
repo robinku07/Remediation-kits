@@ -688,7 +688,7 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   # Ensure inactive password lock is 30 days or less CIS-5.4.1.4
   echo
   echo \*\*\*\* Ensure\ inactive\ password\ lock\ is\ 30\ days\ or\ less
-  egrep -q "^(\s*)INACTIVE\s*=" /etc/default/useradd && sed -r "s/^(\s*)INACTIVE\s*=\s*\S+$/\1INACTIVE=30/" /etc/default/useradd || echo "INACTIVE=30" >> /etc/default/useradd
+  egrep -q "^(\s*)INACTIVE\s*=" /etc/default/useradd && sed -ri "s/^(\s*)INACTIVE\s*=\s*\S+$/\1INACTIVE=30/" /etc/default/useradd || echo "INACTIVE=30" >> /etc/default/useradd
   egrep ^[^:]+:[^\!*] /etc/shadow | cut -d: -f1
 
   # Disable System Accounts CIS-5.4.2
