@@ -146,6 +146,10 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   egrep -q "^(\s*)\*\s+hard\s+core\s+\S+(\s*#.*)?\s*$" /etc/security/limits.conf && sed -ri "s/^(\s*)\*\s+hard\s+core\s+\S+(\s*#.*)?\s*$/\1* hard core 0\2/" /etc/security/limits.conf || echo "* hard core 0" >> /etc/security/limits.conf
   egrep -q "^(\s*)fs.suid_dumpable\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)fs.suid_dumpable\s*=\s*\S+(\s*#.*)?\s*$/\1fs.suid_dumpable = 0\2/" /etc/sysctl.conf || echo "fs.suid_dumpable = 0" >> /etc/sysctl.conf
   sysctl -w fs.suid_dumpable=0
+  systemctl stop apport
+  dpkg -s apport && apt-get purge -y apport
+  systemctl stop whoopsie
+  dpkg -s whoopsie && apt-get purge -y whoopsie
 
   # Enable Randomized Virtual Memory Region Placement CIS-1.5.3
   echo
@@ -266,6 +270,7 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   # Ensure Avahi Server is not enabled CIS-2.2.3
   echo
   echo \*\*\*\* Ensure\ Avahi\ Server\ is\ not\ enabled
+  dpkg -s avahi-daemon && apt-get purge -y avahi-daemon
   systemctl disable avahi-daemon
 
   # Ensure CUPS is not enabled CIS-2.2.4
@@ -432,7 +437,10 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo \*\*\*\* Install\ TCP\ Wrappers
   dpkg -s tcpd || apt-get -y install tcpd
 
-  # Ensure /etc/hosts.allow is configured CIS-3.4.2 will vary as per the services configuration
+  # Ensure /etc/hosts.allow is configured CIS-3.4.2
+  echo
+  echo \*\*\*\* Ensure\ /etc/hosts.allow\ is\ configured
+  egrep -q "^ALL:\s*ALL" /etc/hosts.allow || echo "sshd: ALL" >> /etc/hosts.allow
   
   # Ensure /etc/hosts.deny is configured CIS-3.4.3
   echo
@@ -479,7 +487,9 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   iptables -A OUTPUT -p icmp -m state --state NEW,ESTABLISHED -j ACCEPT 
   iptables -A INPUT -p tcp -m state --state ESTABLISHED -j ACCEPT 
   iptables -A INPUT -p udp -m state --state ESTABLISHED -j ACCEPT 
-  iptables -A INPUT -p icmp -m state --state ESTABLISHED -j ACCEPT 
+  iptables -A INPUT -p icmp -m state --state ESTABLISHED -j ACCEPT
+  mkdir -p /etc/iptables
+  iptables-save > /etc/iptables/rules.v4 
 
   # Open inbound ssh(tcp port 22) connections CIS-3.6.5
   echo
@@ -520,37 +530,37 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   # Set User/Group Owner and Permission on /etc/crontab CIS-5.1.2
   echo
   echo \*\*\*\* Set\ User/Group\ Owner\ and\ Permission\ on\ /etc/crontab
-  chmod g-r-w-x,o-r-w-x /etc/crontab
+  chmod u-x,g-r-w-x,o-r-w-x /etc/crontab
   chown 0:0 /etc/crontab
 
   # Set User/Group Owner and Permission on /etc/cron.hourly CIS-5.1.3
   echo
   echo \*\*\*\* Set\ User/Group\ Owner\ and\ Permission\ on\ /etc/cron.hourly
-  chmod g-r-w-x,o-r-w-x /etc/cron.hourly/
+  chmod u-x,g-r-w-x,o-r-w-x /etc/cron.hourly/
   chown 0:0 /etc/cron.hourly/
 
   # Set User/Group Owner and Permission on /etc/cron.daily CIS-5.1.4
   echo
   echo \*\*\*\* Set\ User/Group\ Owner\ and\ Permission\ on\ /etc/cron.daily
-  chmod g-r-w-x,o-r-w-x /etc/cron.daily/
+  chmod u-x,g-r-w-x,o-r-w-x /etc/cron.daily/
   chown 0:0 /etc/cron.daily/
 
   # Set User/Group Owner and Permission on /etc/cron.weekly CIS-5.1.5
   echo
   echo \*\*\*\* Set\ User/Group\ Owner\ and\ Permission\ on\ /etc/cron.weekly
-  chmod g-r-w-x,o-r-w-x /etc/cron.weekly/
+  chmod u-x,g-r-w-x,o-r-w-x /etc/cron.weekly/
   chown 0:0 /etc/cron.weekly/
 
   # Set User/Group Owner and Permission on /etc/cron.monthly CIS-5.1.6
   echo
   echo \*\*\*\* Set\ User/Group\ Owner\ and\ Permission\ on\ /etc/cron.monthly
-  chmod g-r-w-x,o-r-w-x /etc/cron.monthly/
+  chmod u-x,g-r-w-x,o-r-w-x /etc/cron.monthly/
   chown 0:0 /etc/cron.monthly/
 
   # Set User/Group Owner and Permission on /etc/cron.d CIS-5.1.7
   echo
   echo \*\*\*\* Set\ User/Group\ Owner\ and\ Permission\ on\ /etc/cron.d
-  chmod g-r-w-x,o-r-w-x /etc/cron.d/
+  chmod u-x,g-r-w-x,o-r-w-x /etc/cron.d/
   chown 0:0 /etc/cron.d/
 
   # Restrict at/cron to Authorized Users CIS-5.1.8
@@ -567,6 +577,7 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
 
   # Set Password Creation Requirement Parameters Using pam_pwquality CIS-5.3.1
   echo
+  dpkg -s libpam-pwquality || apt-get install -y libpam-pwquality
   echo \*\*\*\* Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality
   egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+try_first_pass)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1try_first_pass \2/ }' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
   egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+retry=[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1retry=3 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*\s+)retry=[0-9]+(\s+.*)?$/\1retry=3\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
@@ -575,11 +586,18 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+ucredit=-?[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1ucredit=-1 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*\s+)ucredit=-?[0-9]+(\s+.*)?$/\1ucredit=-1\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
   egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+ocredit=-?[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1ocredit=-1 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*\s+)ocredit=-?[0-9]+(\s+.*)?$/\1ocredit=-1\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
   egrep -q "^\s*password\s+requisite\s+pam_pwquality.so\s+" /etc/pam.d/common-password && sed -ri '/^\s*password\s+requisite\s+pam_pwquality.so\s+/ { /^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*(\s+lcredit=-?[0-9]+)(\s+.*)?$/! s/^(\s*password\s+requisite\s+pam_pwquality.so\s+)(.*)$/\1lcredit=-1 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+requisite\s+pam_pwquality.so(\s+\S+)*\s+)lcredit=-?[0-9]+(\s+.*)?$/\1lcredit=-1\3/' /etc/pam.d/common-password || echo Set\ Password\ Creation\ Requirement\ Parameters\ Using\ pam_pwquality - /etc/pam.d/common-password not configured.
-
+  echo "minlen=14
+dcredit=-1
+ucredit=-1
+ocredit=-1
+lcredit=-1" >> /etc/security/pwquality.conf
   # Limit Password Reuse CIS-5.3.3
   echo
-  echo \*\*\*\* Limit\ Password\ Reuse
-  egrep -q "^\s*password\s+sufficient\s+pam_unix.so(\s+.*)$" /etc/pam.d/common-password && sed -ri '/^\s*password\s+sufficient\s+pam_unix.so\s+/ { /^\s*password\s+sufficient\s+pam_unix.so(\s+\S+)*(\s+remember=[0-9]+)(\s+.*)?$/! s/^(\s*password\s+sufficient\s+pam_unix.so\s+)(.*)$/\1remember=5 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+sufficient\s+pam_unix.so(\s+\S+)*\s+)remember=[0-9]+(\s+.*)?$/\1remember=5\3/' /etc/pam.d/common-password || echo Limit\ Password\ Reuse - /etc/pam.d/common-password not configured.
+  echo \*\*\*\* Ensure\ password\ Reuse
+  egrep -q "^\s*password\s+\[\S+\s+\S+\]\s+pam_unix.so\s+\S*.*" /etc/pam.d/common-password && sed -ri '/^\s*password\s+\[\S+\s+\S+\]\s+pam_unix.so\s+\S*.*/ { /^\s*password\s+\[\S+\s+\S+\]\s+pam_unix.so\s+\S*.*(\s+remember=5)(\s+.*)?$/! s/^(\s*password\s+\[\S+\s+\S+\]\s+pam_unix.so\s+\S*.*\s+)(.*)$/\1remember=5 \2/ }' /etc/pam.d/common-password || echo Ensure\ password\ Reuse\ - /etc/pam.d/common-password not configured.
+#  echo
+#  echo \*\*\*\* Limit\ Password\ Reuse
+#  egrep -q "^\s*password\s+sufficient\s+pam_unix.so(\s+.*)$" /etc/pam.d/common-password && sed -ri '/^\s*password\s+sufficient\s+pam_unix.so\s+/ { /^\s*password\s+sufficient\s+pam_unix.so(\s+\S+)*(\s+remember=[0-9]+)(\s+.*)?$/! s/^(\s*password\s+sufficient\s+pam_unix.so\s+)(.*)$/\1remember=5 \2/ }' /etc/pam.d/common-password && sed -ri 's/(^\s*password\s+sufficient\s+pam_unix.so(\s+\S+)*\s+)remember=[0-9]+(\s+.*)?$/\1remember=5\3/' /etc/pam.d/common-password || echo Limit\ Password\ Reuse - /etc/pam.d/common-password not configured.
 
   # Ensure password hashing algorithm is SHA-512 CIS-5.3.4
   echo
@@ -666,6 +684,8 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo
   echo \*\*\*\* Restrict\ Access\ to\ the\ su\ Command
   egrep -q "^\s*auth\s+required\s+pam_wheel.so(\s+.*)?$" /etc/pam.d/su && sed -ri '/^\s*auth\s+required\s+pam_wheel.so(\s+.*)?$/ { /^\s*auth\s+required\s+pam_wheel.so(\s+\S+)*(\s+use_uid)(\s+.*)?$/! s/^(\s*auth\s+required\s+pam_wheel.so)(\s+.*)?$/\1 use_uid\2/ }' /etc/pam.d/su || echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su
+  groupadd -r wheel
+  usermod -G wheel root
 
   # Set Password Expiration Days CIS-5.4.1.1
   echo
