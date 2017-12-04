@@ -113,8 +113,10 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   # Install AIDE CIS-1.3.1
   echo
   echo \*\*\*\* Installing\ AIDE
-  debconf-set-selections <<< "postfix postfix/mailname string $(hostname)"
-  debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Local Only'"
+  echo "postfix postfix/mailname string $(hostname)" | debconf-set-selections
+#  debconf-set-selections <<< "postfix postfix/mailname string $(hostname)"
+  echo "postfix postfix/main_mailer_type string 'Local Only'" | debconf-set-selections
+#  debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Local Only'"
   dpkg -s aide || apt-get -y install aide
 
   # Implement Periodic Execution of File Integrity CIS-1.3.2
