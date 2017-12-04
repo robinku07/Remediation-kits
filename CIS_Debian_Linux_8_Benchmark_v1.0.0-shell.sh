@@ -113,6 +113,8 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   # Install AIDE CIS-1.3.1
   echo
   echo \*\*\*\* Installing\ AIDE
+  debconf-set-selections <<< "postfix postfix/mailname string $(hostname)"
+  debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Local Only'"
   dpkg -s aide || apt-get -y install aide
 
   # Implement Periodic Execution of File Integrity CIS-1.3.2
@@ -460,6 +462,8 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   # Ensure Firewall is active CIS-3.6.1
   echo
   echo \*\*\*\* Ensure\ Firewall\ is\ active
+  echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
+  echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
   dpkg -s iptables || apt-get -y install iptables
   dpkg -s iptables-persistent || apt-get -y install iptables-persistent
   update-rc.d netfilter-persistent enable
