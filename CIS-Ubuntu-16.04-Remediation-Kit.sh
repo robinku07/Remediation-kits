@@ -944,6 +944,13 @@ done
   echo
   echo \*\*\*\* Ensure\ shadow\ group\ is\ empty
   echo Ensure\ shadow\ group\ is\ empty Linux custom object not configured.
+  # Specially Added for CIS-6.2.9
+  usermod -d /nonexistent/_apt _apt
+  usermod -d /nonexistent/nobody nobody
+  mkdir -p /nonexistent/nobody 
+  mkdir -p /nonexistent/_apt
+  chown nobody /nonexistent/nobody
+  chown _apt /nonexistent/_apt
 fi
 
 if [ "$PROFILE" = "Level 2" ]; then
