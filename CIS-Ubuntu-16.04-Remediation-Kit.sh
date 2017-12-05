@@ -494,14 +494,13 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   iptables -A INPUT -p tcp -m state --state ESTABLISHED -j ACCEPT 
   iptables -A INPUT -p udp -m state --state ESTABLISHED -j ACCEPT 
   iptables -A INPUT -p icmp -m state --state ESTABLISHED -j ACCEPT
-  mkdir -p /etc/iptables
-  iptables-save > /etc/iptables/rules.v4 
+  mkdir -p /etc/iptables 
 
   # Open inbound ssh(tcp port 22) connections CIS-3.6.5
   echo
   echo \*\*\*\* Ensure\ firewall\ rules\ exist\ for\ all\ open\ ports
   iptables -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
-
+  iptables-save > /etc/iptables/rules.v4
   # Install the rsyslog package CIS-4.2.3
   echo
   echo \*\*\*\* Install\ the\ rsyslog\ package
