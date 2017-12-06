@@ -84,20 +84,20 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo \*\*\*\* Add\ nodev\ Option\ to\ /home
   egrep -q "^(\s*\S+\s+)/home(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/home(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/home\2nodev\3\4/" /etc/fstab
 
-  # Add nodev Option to /run/shm Partition CIS-1.1.14
+  # Add nodev Option to /dev/shm Partition CIS-1.1.14
   echo
-  echo \*\*\*\* Add\ nodev\ Option\ to\ /run/shm\ Partition
-  egrep -q "^(\s*\S+\s+)/run/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/run/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/run/shm\2nodev\3\4/" /etc/fstab
+  echo \*\*\*\* Add\ nodev\ Option\ to\ /dev/shm\ Partition
+  egrep -q "^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/dev/shm\2nodev\3\4/" /etc/fstab
 
-  # Add nosuid Option to /run/shm Partition CIS-1.1.15
+  # Add nosuid Option to /dev/shm Partition CIS-1.1.15
   echo
-  echo \*\*\*\* Add\ nosuid\ Option\ to\ /run/shm\ Partition
-  egrep -q "^(\s*\S+\s+)/run/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/run/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/run/shm\2nosuid\3\4/" /etc/fstab
+  echo \*\*\*\* Add\ nosuid\ Option\ to\ /dev/shm\ Partition
+  egrep -q "^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/dev/shm\2nosuid\3\4/" /etc/fstab
 
-  # Add noexec Option to /run/shm Partition CIS-1.1.16
+  # Add noexec Option to /dev/shm Partition CIS-1.1.16
   echo
-  echo \*\*\*\* Add\ noexec\ Option\ to\ /run/shm\ Partition
-  egrep -q "^(\s*\S+\s+)/run/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/run/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/run/shm\2noexec\3\4/" /etc/fstab
+  echo \*\*\*\* Add\ noexec\ Option\ to\ /dev/shm\ Partition
+  egrep -q "^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/dev/shm\2noexec\3\4/" /etc/fstab
 
   # Set Sticky Bit on All World-Writable Directories CIS-1.1.20
   echo
