@@ -632,6 +632,7 @@ lcredit=-1" >> /etc/security/pwquality.conf
   # Set SSH MaxAuthTries to 4 or Less CIS-5.2.5
   echo
   echo \*\*\*\* Set\ SSH\ MaxAuthTries\ to\ 4\ or\ Less
+  echo >> /etc/ssh/sshd_config
   egrep -q "^(\s*)MaxAuthTries\s+\S+(\s*#.*)?\s*$" /etc/ssh/sshd_config && sed -ri "s/^(\s*)MaxAuthTries\s+\S+(\s*#.*)?\s*$/\1MaxAuthTries 4\2/" /etc/ssh/sshd_config || echo "MaxAuthTries 4" >> /etc/ssh/sshd_config
 
   # Set SSH IgnoreRhosts to Yes CIS-5.2.6
