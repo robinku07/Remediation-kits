@@ -98,7 +98,8 @@ install tipc /bin/true" > /etc/modprobe.d/CIS.conf
   echo
   echo \*\*\*\* Add\ noexec\ Option\ to\ /dev/shm\ Partition
   egrep -q "^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/dev/shm\2noexec\3\4/" /etc/fstab
-
+  echo "tmpfs    /dev/shm        tmpfs   defaults,nodev,nosuid,noexec    0 0" >> /etc/fstab
+  mount -o remount /dev/shm
   # Set Sticky Bit on All World-Writable Directories CIS-1.1.20
   echo
   echo \*\*\*\* Set\ Sticky\ Bit\ on\ All\ World-Writable\ Directories
