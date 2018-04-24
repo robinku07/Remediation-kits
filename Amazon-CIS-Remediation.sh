@@ -523,17 +523,35 @@ if [ "$PROFILE" = "Level 1" ] || [ "$PROFILE" = "Level 2" ]; then
   # Ensure default deny firewall policy
   echo
   echo \*\*\*\* Ensure\ default\ deny\ firewall\ policy
-  echo Ensure\ default\ deny\ firewall\ policy not configured.
-
-  # Ensure loopback traffic is configured
-  echo
+  # Flush IPtables rules 
+  iptables -F 
+  # Ensure default deny firewall policy 
+  iptables -P INPUT DROP 
+  iptables -P OUTPUT DROP
+  iptables -P FORWARD DROP 
+  
+  # Ensure loopback traffic is configured CIS-3.6.3
+  echo 
   echo \*\*\*\* Ensure\ loopback\ traffic\ is\ configured
-  echo Ensure\ loopback\ traffic\ is\ configured not configured.
+  iptables -A INPUT -i lo -j ACCEPT 
+  iptables -A OUTPUT -o lo -j ACCEPT 
+  iptables -A INPUT -s 127.0.0.0/8 -j DROP 
 
-  # Ensure firewall rules exist for all open ports
+  # Ensure outbound and established connections are configured CIS-3.6.4
+  iptables -A OUTPUT -p tcp -m state --state NEW,ESTABLISHED -j ACCEPT 
+  iptables -A OUTPUT -p udp -m state --state NEW,ESTABLISHED -j ACCEPT 
+  iptables -A OUTPUT -p icmp -m state --state NEW,ESTABLISHED -j ACCEPT 
+  iptables -A INPUT -p tcp -m state --state ESTABLISHED -j ACCEPT 
+  iptables -A INPUT -p udp -m state --state ESTABLISHED -j ACCEPT 
+  iptables -A INPUT -p icmp -m state --state ESTABLISHED -j ACCEPT
+  mkdir -p /etc/iptables 
+
+  # Open inbound ssh(tcp port 22) connections CIS-3.6.5
   echo
   echo \*\*\*\* Ensure\ firewall\ rules\ exist\ for\ all\ open\ ports
-  echo Ensure\ firewall\ rules\ exist\ for\ all\ open\ ports not configured.
+  iptables -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
+  iptables-save > /etc/iptables/rules.v4
+  echo
 
   # Ensure rsyslog Service is enabled
   echo
