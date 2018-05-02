@@ -557,17 +557,6 @@ if [ "$PROFILE" = "Level 1" ] || [ "$PROFILE" = "Level 2" ]; then
   iptables-save > /etc/sysconfig/iptables
   echo
 
-  # Ensure rsyslog Service is enabled
-  echo
-  echo \*\*\*\* Ensure\ rsyslog\ Service\ is\ enabled
-  rpm -q rsyslog && chkconfig rsyslog on
-
-  # Ensure rsyslog default file permissions configured
-  echo
-  echo \*\*\*\* Ensure\ rsyslog\ default\ file\ permissions\ configured
-  echo Ensure\ rsyslog\ default\ file\ permissions\ configured not configured.
-  egrep -q '^(\$)FileCreateMode(\s.*)0[1,5,6][1,4]0$' /etc/rsyslog.conf || sed -ri 's/^\$FileCreateMode\s*.*/\$FileCreateMode 0640/' /etc/rsyslog.conf || echo FileCreateMode >> /etc/rsyslog.conf
-
   # Ensure rsyslog is configured to send logs to a remote log host
   echo
   echo \*\*\*\* Ensure\ rsyslog\ is\ configured\ to\ send\ logs\ to\ a\ remote\ log\ host
@@ -587,6 +576,17 @@ if [ "$PROFILE" = "Level 1" ] || [ "$PROFILE" = "Level 2" ]; then
   echo
   echo \*\*\*\* Ensure\ rsyslog\ or\ syslog-ng\ is\ installed
   rpm -q rsyslog || rpm -q syslog-ng || yum -y install rsyslog
+
+  # Ensure rsyslog Service is enabled
+  echo
+  echo \*\*\*\* Ensure\ rsyslog\ Service\ is\ enabled
+  rpm -q rsyslog && chkconfig rsyslog on
+  
+  # Ensure rsyslog default file permissions configured
+  echo
+  echo \*\*\*\* Ensure\ rsyslog\ default\ file\ permissions\ configured
+  echo Ensure\ rsyslog\ default\ file\ permissions\ configured not configured.
+  egrep -q '^(\$)FileCreateMode(\s.*)0[1,5,6][1,4]0$' /etc/rsyslog.conf && sed -ri 's/^\$FileCreateMode\s*.*/\$FileCreateMode 0640/' /etc/rsyslog.conf || echo "\$FileCreateMode 0640" >> /etc/rsyslog.conf
 
   # Ensure permissions on all logfiles are configured
   echo
