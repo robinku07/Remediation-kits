@@ -90,17 +90,18 @@ if [ "$PROFILE" = "Level 1" ] || [ "$PROFILE" = "Level 2" ]; then
   # Ensure nodev option set on /dev/shm partition
   echo
   echo \*\*\*\* Ensure\ nodev\ option\ set\ on\ /dev/shm\ partition
-  echo Ensure\ nodev\ option\ set\ on\ /dev/shm\ partition not configured
-
+  egrep -q "^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/dev/shm\2nodev\3\4/" /etc/fstab
   # Ensure nosuid option set on /dev/shm partition
   echo
   echo \*\*\*\* Ensure\ nosuid\ option\ set\ on\ /dev/shm\ partition
-  echo Ensure\ nosuid\ option\ set\ on\ /dev/shm\ partition not configured
+  egrep -q "^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/dev/shm\2nosuid\3\4/" /etc/fstab
 
   # Ensure noexec option set on /dev/shm partition
   echo
   echo \*\*\*\* Ensure\ noexec\ option\ set\ on\ /dev/shm\ partition
-  echo Ensure\ noexec\ option\ set\ on\ /dev/shm\ partition not configured
+  egrep -q "^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/dev/shm\2noexec\3\4/" /etc/fstab
+  echo "tmpfs    /dev/shm        tmpfs   defaults,nodev,nosuid,noexec    0 0" >> /etc/fstab
+  mount -o remount /dev/shm
 
   # Ensure sticky bit is set on all world-writable directories
   echo
@@ -413,13 +414,13 @@ if [ "$PROFILE" = "Level 1" ] || [ "$PROFILE" = "Level 2" ]; then
   echo
   echo \*\*\*\* Ensure\ ICMP\ redirects\ are\ not\ accepted
   egrep -q "^(\s*)net.ipv4.conf.all.accept_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.all.accept_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.all.accept_redirects = 0\2/" /etc/sysctl.conf || echo "net.ipv4.conf.all.accept_redirects = 0" >> /etc/sysctl.conf
-  egrep -q "^(\s*)net.ipv4.conf.all.accept_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.all.accept_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.all.accept_redirects = 0\2/" /etc/sysctl.conf || echo "net.ipv4.conf.all.accept_redirects = 0" >> /etc/sysctl.conf
+  egrep -q "^(\s*)net.ipv4.conf.default.accept_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.default.accept_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.default.accept_redirects = 0\2/" /etc/sysctl.conf || echo "net.ipv4.conf.default.accept_redirects = 0" >> /etc/sysctl.conf
 
   # Ensure secure ICMP redirects are not accepted
   echo
   echo \*\*\*\* Ensure\ secure\ ICMP\ redirects\ are\ not\ accepted
-  egrep -q "^(\s*)net.ipv4.conf.all.secure_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.all.secure_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.all.secure_redirects = 1\2/" /etc/sysctl.conf || echo "net.ipv4.conf.all.secure_redirects = 1" >> /etc/sysctl.conf
-  egrep -q "^(\s*)net.ipv4.conf.default.secure_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.default.secure_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.default.secure_redirects = 1\2/" /etc/sysctl.conf || echo "net.ipv4.conf.default.secure_redirects = 1" >> /etc/sysctl.conf
+  egrep -q "^(\s*)net.ipv4.conf.all.secure_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.all.secure_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.all.secure_redirects = 0\2/" /etc/sysctl.conf || echo "net.ipv4.conf.all.secure_redirects = 0" >> /etc/sysctl.conf
+  egrep -q "^(\s*)net.ipv4.conf.default.secure_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv4.conf.default.secure_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv4.conf.default.secure_redirects = 0\2/" /etc/sysctl.conf || echo "net.ipv4.conf.default.secure_redirects = 0" >> /etc/sysctl.conf
 
   # Ensure suspicious packets are logged
   echo
@@ -459,7 +460,8 @@ if [ "$PROFILE" = "Level 1" ] || [ "$PROFILE" = "Level 2" ]; then
   echo \*\*\*\* Ensure\ IPv6\ redirects\ are\ not\ accepted
   egrep -q "^(\s*)net.ipv6.conf.all.accept_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv6.conf.all.accept_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv6.conf.all.accept_redirects = 0\2/" /etc/sysctl.conf || echo "net.ipv6.conf.all.accept_redirects = 0" >> /etc/sysctl.conf
   egrep -q "^(\s*)net.ipv6.conf.default.accept_redirects\s*=\s*\S+(\s*#.*)?\s*$" /etc/sysctl.conf && sed -ri "s/^(\s*)net.ipv6.conf.default.accept_redirects\s*=\s*\S+(\s*#.*)?\s*$/\1net.ipv6.conf.default.accept_redirects = 0\2/" /etc/sysctl.conf || echo "net.ipv6.conf.default.accept_redirects = 0" >> /etc/sysctl.conf
-
+  # Now Reloading the Settings from File /etc/sysctl.conf
+  echo \*\*\*\* Reloading\ the\ Settings\ from\ file\ /etc/sysctl.conf
   # Ensure IPv6 is disabled
   echo
   echo \*\*\*\* Ensure\ IPv6\ is\ disabled
@@ -475,11 +477,13 @@ if [ "$PROFILE" = "Level 1" ] || [ "$PROFILE" = "Level 2" ]; then
   echo
   echo \*\*\*\* Ensure\ /etc/hosts.allow\ is\ configured
   touch /etc/hosts.allow
+  egrep -q "^ALL:\s*ALL" /etc/hosts.allow || echo "sshd: ALL" >> /etc/hosts.allow
 
   # Ensure /etc/hosts.deny is configured
   echo
   echo \*\*\*\* Ensure\ /etc/hosts.deny\ is\ configured
-  echo Ensure\ /etc/hosts.deny\ is\ configured not configured.
+  touch  /etc/hosts.deny
+  egrep -q "^ALL:\s*ALL" /etc/hosts.deny || echo "ALL: ALL" >> /etc/hosts.deny
 
   # Ensure permissions on /etc/hosts.allow are configured
   echo
@@ -544,13 +548,13 @@ if [ "$PROFILE" = "Level 1" ] || [ "$PROFILE" = "Level 2" ]; then
   iptables -A INPUT -p tcp -m state --state ESTABLISHED -j ACCEPT 
   iptables -A INPUT -p udp -m state --state ESTABLISHED -j ACCEPT 
   iptables -A INPUT -p icmp -m state --state ESTABLISHED -j ACCEPT
-  mkdir -p /etc/iptables 
+  
 
   # Open inbound ssh(tcp port 22) connections CIS-3.6.5
   echo
   echo \*\*\*\* Ensure\ firewall\ rules\ exist\ for\ all\ open\ ports
   iptables -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
-  iptables-save > /etc/iptables/rules.v4
+  iptables-save > /etc/sysconfig/iptables
   echo
 
   # Ensure rsyslog Service is enabled
@@ -562,6 +566,7 @@ if [ "$PROFILE" = "Level 1" ] || [ "$PROFILE" = "Level 2" ]; then
   echo
   echo \*\*\*\* Ensure\ rsyslog\ default\ file\ permissions\ configured
   echo Ensure\ rsyslog\ default\ file\ permissions\ configured not configured.
+  egrep -q '^(\$)FileCreateMode(\s.*)0[1,5,6][1,4]0$' /etc/rsyslog.conf || sed -ri 's/^\$FileCreateMode\s*.*/\$FileCreateMode 0640/' /etc/rsyslog.conf
 
   # Ensure rsyslog is configured to send logs to a remote log host
   echo
@@ -1151,4 +1156,4 @@ if [ "$PROFILE" = "Level 2" ]; then
   echo \*\*\*\* Ensure\ the\ audit\ configuration\ is\ immutable
   egrep "^-e\s+2\s*$" /etc/audit/audit.rules || echo "-e 2" >> /etc/audit/audit.rules
 fi
-
+sysctl -p
