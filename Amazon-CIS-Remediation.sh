@@ -101,7 +101,7 @@ if [ "$PROFILE" = "Level 1" ] || [ "$PROFILE" = "Level 2" ]; then
   echo \*\*\*\* Ensure\ noexec\ option\ set\ on\ /dev/shm\ partition
   egrep -q "^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$" /etc/fstab && sed -ri "s/^(\s*\S+\s+)/dev/shm(\s+\S+\s+\S+)(\s+\S+\s+\S+)(\s*#.*)?\s*$/\1/dev/shm\2noexec\3\4/" /etc/fstab
   echo "tmpfs    /dev/shm        tmpfs   defaults,nodev,nosuid,noexec    0 0" >> /etc/fstab
-  mount -o remount /dev/shm
+  mount -o remount,noexec,nosuid,nodev /dev/shm
 
   # Ensure sticky bit is set on all world-writable directories
   echo
@@ -566,7 +566,7 @@ if [ "$PROFILE" = "Level 1" ] || [ "$PROFILE" = "Level 2" ]; then
   echo
   echo \*\*\*\* Ensure\ rsyslog\ default\ file\ permissions\ configured
   echo Ensure\ rsyslog\ default\ file\ permissions\ configured not configured.
-  egrep -q '^(\$)FileCreateMode(\s.*)0[1,5,6][1,4]0$' /etc/rsyslog.conf || sed -ri 's/^\$FileCreateMode\s*.*/\$FileCreateMode 0640/' /etc/rsyslog.conf
+  egrep -q '^(\$)FileCreateMode(\s.*)0[1,5,6][1,4]0$' /etc/rsyslog.conf || sed -ri 's/^\$FileCreateMode\s*.*/\$FileCreateMode 0640/' /etc/rsyslog.conf || echo FileCreateMode >> /etc/rsyslog.conf
 
   # Ensure rsyslog is configured to send logs to a remote log host
   echo
