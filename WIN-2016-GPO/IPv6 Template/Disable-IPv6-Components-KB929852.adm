@@ -1,0 +1,24 @@
+CLASS MACHINE
+   CATEGORY !!CAT_Network
+      CATEGORY !!CAT_TCPIPSettings
+         CATEGORY !!CAT_Parameters
+            POLICY !!DisabledIPv6Components
+	       EXPLAIN !!DisabledIPv6Components_Explain
+	          KEYNAME "SYSTEM\CurrentControlSet\Services\TCPIP6\Parameters"
+	             SUPPORTED !!SUPPORTED_Vista
+	             VALUENAME "DisabledComponents"
+	                VALUEON  NUMERIC 0
+	                VALUEOFF NUMERIC 255
+            END POLICY
+         END CATEGORY
+      END CATEGORY
+   END CATEGORY
+
+[strings]
+CAT_Network="Network"
+CAT_TCPIPSettings="TCPIP Settings"
+CAT_Parameters="Parameters"
+
+DisabledIPv6Components="IPv6 Component State"
+DisabledIPv6Components_Explain="This policy will configure the appropriate registry key to globally disable or enable ALL IPv6 components (except the IPv6 loopback interface). The change will not take effect on computers until they are restarted. Tech info is at MSKB 929852."
+SUPPORTED_Vista="At least Windows Vista"
