@@ -1,0 +1,26 @@
+CLASS MACHINE
+   CATEGORY !!CAT_Network
+      CATEGORY !!CAT_DNSClient
+         POLICY !!SetNetBIOSNodeType
+	    EXPLAIN !!SetNetBIOSNodeType_Explain
+	       KEYNAME "SYSTEM\CurrentControlSet\Services\NetBT\Parameters"
+	          PART !!NetBIOSNodeType DROPDOWNLIST NOSORT REQUIRED
+	             VALUENAME "NodeType"
+	                ITEMLIST 
+	                   NAME "B-node (broadcast only)" VALUE NUMERIC 1
+	                   NAME "P-node (point-to-point only)" VALUE NUMERIC 2
+	                   NAME "M-node (mixed - broadcast first, then point-to-point)" VALUE NUMERIC 4
+	                   NAME "H-node (hybrid - point-to-point first, then broadcast)" VALUE NUMERIC 8
+                   	END ITEMLIST
+		  END PART
+         END POLICY
+      END CATEGORY
+   END CATEGORY
+
+[strings]
+CAT_Network="Network"
+CAT_DNSClient="DNS Client"
+
+SetNetBIOSNodeType="Set NetBIOS node type"
+SetNetBIOSNodeType_Explain="This policy will configure the appropriate registry key to set the NetBIOS node type. Tech info is at MSKB 160177."
+NetBIOSNodeType="NetBIOS node type"
